@@ -4,4 +4,5 @@ Intune has an API called [Graph API](https://docs.microsoft.com/en-us/graph/use-
 
 High-level concept:
 
-![image](https://user-images.githubusercontent.com/47246332/173604534-94084052-de69-4a34-b362-65e3c2e49adb.png)
+![image](https://user-images.githubusercontent.com/47246332/173604610-466940e6-5fa9-45c7-b9af-ea31bc86da8a.png)
+
