@@ -30,19 +30,21 @@ try{
     
     $PSScriptRoot
 
-    # Remove and revoke the deleted managed devices from eduVPN
     foreach ($id in $removed){
+        # Ask eduVPN to remove the device and revoke its VPN configs
         $removeResponse = Invoke-WebRequest -Method Post -Uri https://vpn.strategyit.nl/vpn-user-portal/removeIntuneConfig -Headers $header -Body @{user_id="$id"}
 
         if($removeResponse.StatusCode -eq 200){
             $deployedVpnDeviceIds.remove($id)
         }
     }
-    # Add the new managed devices to eduVPN
     foreach ($id in $added){
+        # Add the new managed device to eduVPN and receive a VPN config
         $addedResponse = Invoke-WebRequest -Method Post -Uri https://vpn.strategyit.nl/vpn-user-portal/deployIntuneConfig -Headers $header -Body @{profile_id = "sysvpn";user_id="$id"}
 
         if($addedResponse.StatusCode -eq 200){
+            # Send config to Intune
+            Invoke-webrequest -Method POST -Uri 'https://graph.microsoft.com/beta/deviceManagement/deviceManagementScripts' -Headers $getParams -ContentType 'application/json'
             $deployedVpnDeviceIds.Add($id)
         }
             
