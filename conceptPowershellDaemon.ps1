@@ -9,7 +9,7 @@ try{
 
     # We get the current managed devices using the Intune API
     $url = 'https://graph.microsoft.com/v1.0/deviceManagement/managedDevices?$select=id'
-    $managedDeviceIds = Invoke-webrequest -Method GET -Uri $url -Headers $getParams -ContentType 'application/json'
+    $managedDeviceIds = Invoke-webrequest -Method GET -Uri $url -Headers $getParams
     $managedDeviceIds = $managedDeviceIDs | ConvertFrom-Json
 
     # Here we create an authorization header
