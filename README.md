@@ -32,7 +32,9 @@ High-level concept:
 
 Unfortunately, a significant limitation of Intune is that we can not easily deploy a configuration for a specific managed device. [The device needs to be in a group in order to be able to deploy the configuration](https://docs.microsoft.com/en-us/graph/api/intune-shared-devicemanagementscript-assign?view=graph-rest-beta). Since every deployment is unique, every managed device needs to be in an unique group. This results into an overload of groups which makes managebility for IT administrators more difficult.
 
-In order to use just one ,
+In order to mitigate this, we deploy only one powershell/batch script that is uniform for every managed device. This contains an admin token that receives a VPN configuration for that device. Since we need to be able to revoke the VPN configuration files automatically, we run a powershell daemon that revokes them whenever an Intune device is deleted:
+
+
 
 
 
