@@ -38,7 +38,8 @@ In order to mitigate this, we deploy only one powershell/batch script that is un
 
 We also need to be able to revoke the VPN configuration files automatically, so we run a powershell daemon that revokes them whenever an Intune device is deleted:
 
-![eduVPN provisioning(1) drawio](https://user-images.githubusercontent.com/47246332/175930592-305b29cb-c9f6-42fb-9676-8aa63d8f9ea2.png)
+![eduVPN provisioning(1) drawio(1)](https://user-images.githubusercontent.com/47246332/175930657-1c1e9cff-9344-4feb-9e9f-9fe896813e20.png)
+
 
 
 
