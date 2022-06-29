@@ -59,7 +59,16 @@ Clone the repository:
 
     git clone https://github.com/FlorisHendriks98/HTTP_bulk_provisioning.git
 
+Traverse to the repository:
+
+    cd HTTP_bulk_provisioning
+
 ### Step 2
-  
+Run DeployVpnConfig.ps1, with -p you must specify the VPN profile, -s you must specify the hostname of the VPN server and -t you must specify the token you can receive from the vpn-user-portal or api. 
 
+    ./DeployVpnConfig.ps1 -p "default" -s "vpn.example.com" -t "256bit_token_placeholder"
+    
+In the same directory the file Intune_management_script.ps1 is created.
 
+### Step 3
+Add the Intune_management_script.ps1 to the Intune portal.
