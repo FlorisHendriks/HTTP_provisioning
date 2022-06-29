@@ -9,7 +9,7 @@ A limitation of this authorization protocol is that the VPN connection can only 
 
 Moreover, this authorization protocol can be seen as an extra threshold for the user to use the VPN. The user needs to start up the client, connect and log in (if the configuration is expired).
 
-# Solution
+# Finding a solution
 In this document we are going to solve these drawbacks of the current authorization flow by making eduVPN a system VPN that is always on via provisioning. So instead of making the user interact with a eduVPN client to establish a VPN connection we are going to do that via a script that runs in the background. [Initially we solved this by implementing a technical path using Active Directory Certificate Services (ADCS)](https://github.com/FlorisHendriks98/eduVPN-provisioning). This gets the job done but has two significant limitations. Organisations need to implement ADCS and certificate revocation was a bit inelegant. We want to improve this solution by taking another technical path called HTTP bulk provisioning.
 
 With HTTP bulk provisioning the main idea is that, when a device enrolls to Intune, we notify eduVPN. eduVPN generates a VPN configuration for this device. Finally, we send the VPN configuration to Intune and deploys it to the enrolled device. 
@@ -40,6 +40,13 @@ We also need to be able to revoke the VPN configuration files automatically, so 
 
 ![eduVPN provisioning(1) drawio(1)](https://user-images.githubusercontent.com/47246332/175930657-1c1e9cff-9344-4feb-9e9f-9fe896813e20.png)
 
+This is the path we are going to implement to make eduVPN a system VPN.
+
+# Implementation
+
+## Windows
+
+### Prerequisites
 
 
 
