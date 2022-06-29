@@ -47,7 +47,9 @@ This is the path we are going to implement to make eduVPN a system VPN.
 ## Windows
 
 ### Prerequisites
-
+* A Windows device with Windows 10 or later
+* Access to a Microsoft Endpoint Manager (Intune) tenant.
+* Git installed.
 
 
 
