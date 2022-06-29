@@ -48,9 +48,18 @@ This is the path we are going to implement to make eduVPN a system VPN.
 
 ### Prerequisites
 * A Windows device with Windows 10 or later
-* Access to a Microsoft Endpoint Manager (Intune) tenant.
+* Access to an Intune tenant.
 * Git installed.
+* A deployed eduVPN server with support for provisioning
 
+Here we create a powershell Intune deployment script adapted to your organisation and deploy a powershell daemon. 
 
+### Step 1
+Clone the repository:
+
+    git clone https://github.com/FlorisHendriks98/HTTP_bulk_provisioning.git
+
+### Step 2
+  
 
 
