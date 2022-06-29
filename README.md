@@ -72,3 +72,8 @@ In the same directory the file Intune_management_script.ps1 is created.
 
 ### Step 3
 Add the Intune_management_script.ps1 to the Intune portal.
+
+https://user-images.githubusercontent.com/47246332/176458096-3639cc69-b93e-480c-8338-43701ad9e3af.mp4
+
+
+
