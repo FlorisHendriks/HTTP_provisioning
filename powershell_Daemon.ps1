@@ -1,4 +1,4 @@
-﻿try{
+try{
     # We retrieve an access token from Microsoft
     $postParams = @{client_id='6ce7fc35-55d3-4779-b422-04580130b55d';scope='https://graph.microsoft.com/.default';client_secret='client_secret_placeholder';grant_type='client_credentials'}
     $tokenResponse = Invoke-restmethod -Uri https://login.microsoftonline.com/a9d8059a-38d4-4690-bdd4-9f7d0662d8d0/oauth2/v2.0/token -Method POST -Body $postParams
