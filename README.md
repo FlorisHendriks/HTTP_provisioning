@@ -51,6 +51,8 @@ This is the path we are going to implement to make eduVPN a system VPN.
 * Access to an Intune tenant.
 * Git installed.
 * A deployed eduVPN server with support for provisioning
+* [A registered app in Azure](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
+* [Create a client secret for the app](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#option-2-create-a-new-application-secret)
 
 Here we create a powershell Intune deployment script adapted to your organisation and deploy a powershell daemon. 
 
@@ -64,17 +66,29 @@ Traverse to the repository:
     cd HTTP_bulk_provisioning
 
 ### Step 2
-Run DeployVpnConfig.ps1, with -p you must specify the VPN profile, -s you must specify the hostname of the VPN server and -t you must specify the token you can receive from the vpn-user-portal or api. 
+Run Create_Intune_Management_Script.ps1, specify the following parameters:
+-profile you *must* specify the VPN profile 
+-server you *must* specify the hostname of the VPN server 
+-token you *must* specify the token you can receive from the vpn-user-portal or api. 
 
-    ./DeployVpnConfig.ps1 -p "default" -s "vpn.example.com" -t "256bit_token_placeholder"
+    ./DeployVpnConfig.ps1 -profile "default" -server "vpn.example.com" -token "256bit_token_placeholder"
     
-In the same directory the file Intune_management_script.ps1 is created.
+In the same directory the file Intune_Management_Script.ps1 is created.
 
+Next, run Create_Powershell_Daemon.ps1 which is located in the same directory. Specify the following parameters: 
+-server you must specify the hostname of the VPN server 
+-token you must specify the token you can receive from the vpn-user-portal or api
+-clientId you must specify the identifier of the app you registered (see prerequisites)
+-clientSecret you must specify the client secret you created for the app (see prerequisites)
+
+In the same directory Powershell_Daemon.ps1 is created
 ### Step 3
 Add the Intune_management_script.ps1 to the Intune portal.
 
 https://user-images.githubusercontent.com/47246332/176458532-2f1dd9b2-50a9-4e9d-9c0f-9c65da325ccd.mp4
 
+### Step 4
+Now we deploy a powershell daemon that revokes an eduVPN config whenever a managed device gets removed from Intune.
 
 
 
