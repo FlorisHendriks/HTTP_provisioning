@@ -72,7 +72,7 @@ Run Create_Intune_Management_Script.ps1, specify the following parameters:
 * -server you **must** specify the hostname of the VPN server
 * -token you **must** specify the token you can receive from the eduVPN vpn-user-portal or api.
 
-example:
+Example:
 
     ./DeployVpnConfig.ps1 -profile "default" -server "vpn.example.com" -token "256bit_token_placeholder"
 
