@@ -1,6 +1,6 @@
 try{
     # We retrieve an access token from Microsoft
-    $postParams = @{client_id='6ce7fc35-55d3-4779-b422-04580130b55d';scope='https://graph.microsoft.com/.default';client_secret='client_secret_placeholder';grant_type='client_credentials'}
+    $postParams = @{client_id='app_id';scope='https://graph.microsoft.com/.default';client_secret='client_secret_placeholder';grant_type='client_credentials'}
     $tokenResponse = Invoke-restmethod -Uri https://login.microsoftonline.com/a9d8059a-38d4-4690-bdd4-9f7d0662d8d0/oauth2/v2.0/token -Method POST -Body $postParams
 
     $access_token = $tokenResponse.access_token
@@ -21,18 +21,24 @@ try{
     {
         $deployedVpnDeviceIds = Get-Content -Path "$PSScriptRoot\deployedVpnDeviceIds.txt"
     }
-    else{
+    if($deployedVpnDeviceIds -eq $null)
+    {
         $deployedVpnDeviceIds = @()
     }
-    
+    $deployedVpnDeviceIds
     # Do a fast difference check to see if managed devices are removed / added
-    $removed = [String[]][Linq.Enumerable]::Except([String[]]$deployedVpnDeviceIds, [String[]]$managedDeviceIds.value.id)
-    $added = [String[]][Linq.Enumerable]::Except([String[]]$managedDeviceIds.value.id, [String[]]$deployedVpnDeviceIds)
+    if($managedDeviceIds.'@odata.count' -ne 0){
+        $removed = [String[]][Linq.Enumerable]::Except([String[]]$deployedVpnDeviceIds, [String[]]$managedDeviceIds.value.id)
+        $added = [String[]][Linq.Enumerable]::Except([String[]]$managedDeviceIds.value.id, [String[]]$deployedVpnDeviceIds)
+    }
+    else{
+        $removed = [String[]][Linq.Enumerable]::Except([String[]]$deployedVpnDeviceIds, [String[]]$managedDeviceIds.value)
+        $added = [String[]][Linq.Enumerable]::Except([String[]]$managedDeviceIds.value, [String[]]$deployedVpnDeviceIds)
+    }
 
     # Remove and revoke the deleted managed devices from eduVPN
     foreach ($id in $removed){
         $removeResponse = Invoke-WebRequest -usebasicparsing -Method Post -Uri 'https://vpn.strategyit.nl/vpn-user-portal/api/v3/removeIntuneConfig?token=256bit_secret_token' -Headers $header -Body @{user_id="$id"}
-		
         if($removeResponse.StatusCode -eq 200){
             $deployedVpnDeviceIds = @($deployedVpnDeviceIds | Where-Object { $_ -ne $id })
             echo "$id removed"
