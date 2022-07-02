@@ -73,7 +73,7 @@ Run Create_Intune_Management_Script.ps1, specify the following parameters:
 * -token you **must** specify the token you can receive from the eduVPN vpn-user-portal or api. 
 
     ./DeployVpnConfig.ps1 -profile "default" -server "vpn.example.com" -token "256bit_token_placeholder"
-    
+
 In the same directory the file Intune_Management_Script.ps1 is created.
 
 Next, run Create_Powershell_Daemon.ps1 which is located in the same directory. Specify the following parameters: 
