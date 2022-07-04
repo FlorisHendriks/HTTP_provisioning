@@ -45,6 +45,7 @@ This is the path we are going to implement to make eduVPN a system VPN.
 # Implementation
 
 ## Windows
+**NOTE**: We also have an instruction video on how to deploy eduVPN as a system VPN [here]() 
 
 ### Prerequisites
 * A Windows device with Windows 10 or later
@@ -91,8 +92,6 @@ Next, run Create_Powershell_Daemon.ps1 which is located in the same directory. S
 ./Create_Powershell_Daemon.ps1 -s "vpn.example.com" -t "256bit_token_placeholder" -id "Application_ID" -cs "client_secret" -e "https://login.microsoftonline.com/hexadecimals_placeholder/oauth2/v2.0/token"
 ```
 
-    
-
 ### Step 4
 Add the Intune_management_script.ps1 to the Intune portal.
 
@@ -102,5 +101,6 @@ https://user-images.githubusercontent.com/47246332/176458532-2f1dd9b2-50a9-4e9d-
 Now we deploy a powershell daemon that revokes an eduVPN config whenever a managed device gets removed from Intune.
 
 
+## 
 
 
