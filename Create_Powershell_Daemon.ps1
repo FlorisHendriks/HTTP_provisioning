@@ -63,4 +63,4 @@ if(-not($s) -or -not($id) -or -not($cs) -or -not($t) -or -not($e))
 catch{
 `$_ | Out-File -FilePath `"`$PSScriptRoot\eduVPN-Intune.log`"
 `$_
-}" | Out-File -FilePath "$PSScriptRoot\Powershell_Daemon.ps1"
+}" | Out-File -Encoding "UTF8" -FilePath "$PSScriptRoot\Powershell_Daemon.ps1"
