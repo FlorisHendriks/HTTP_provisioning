@@ -66,5 +66,5 @@ catch{
 
 # Create a scheduled task that runs the Powershell_Daemon.ps1 every 5 minutes
 schtasks.exe /create /tn "eduVPN Powershell Daemon" /tr "powershell.exe $PSScriptRoot\Powershell_Daemon.ps1" /sc minute /mo 5 /ru "System"
-
+schtasks.exe /run /tn "eduVPN Powershell Daemon"
 echo "The Powershell Daemon has been deployed"
