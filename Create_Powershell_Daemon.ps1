@@ -61,7 +61,11 @@ if(!($s -and $id -and $cs -and $t -and $e))
     `$deployedVpnDeviceI | Out-File `"`$PSScriptRoot\deployedVpnDeviceIds.txt`"
 }
 catch{
-`$_ | Out-File -FilePath `"`$PSScriptRoot\Powershell_Daemon.log`"
+`$_ | Out-File -FilePath `"`$PSScriptRoot\eduVPN-Intune.log`"
 `$_
 }" | Out-File -Encoding "UTF8" -FilePath "$PSScriptRoot\Powershell_Daemon.ps1"
-echo "$PSScriptRoot\Powershell_Daemon.ps1 has been created"
+
+# Create a scheduled task that runs the Powershell_Daemon.ps1 every 5 minutes
+schtasks.exe /create /tn "Powershell Daemon" /tr "powershell.exe $PSScriptRoot\Powershell_Daemon.ps1" /sc minute /mo 5 /ru "System"
+
+echo "The Powershell Daemon has been deployed"
