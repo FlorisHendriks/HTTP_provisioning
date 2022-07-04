@@ -56,9 +56,9 @@ if(!($s -and $id -and $cs -and $t -and $e))
     }
     foreach (`$id in `$added){
         `$temp = @(`$id)
-        `$deployedVpnDeviceI = `$deployedVpnDeviceI + `$temp
+        `$deployedVpnDeviceIds = `$deployedVpnDeviceIds + `$temp
     }
-    `$deployedVpnDeviceI | Out-File `"`$PSScriptRoot\deployedVpnDeviceIds.txt`"
+    `$deployedVpnDeviceIds | Out-File `"`$PSScriptRoot\deployedVpnDeviceIds.txt`"
 }
 catch{
 `$_ | Out-File -FilePath `"`$PSScriptRoot\eduVPN-Intune.log`"
