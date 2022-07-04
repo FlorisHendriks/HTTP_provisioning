@@ -53,6 +53,7 @@ This is the path we are going to implement to make eduVPN a system VPN.
 * A deployed eduVPN server with support for provisioning
 * [A registered app in Azure](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
 * [Create a client secret for the app](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#option-2-create-a-new-application-secret)
+* [Find the token endpoint for the app](https://user-images.githubusercontent.com/47246332/177116133-9e070012-bb2a-4134-8263-e1c1a71add8b.png)
 
 Here we create a powershell Intune deployment script adapted to your organisation and deploy a powershell daemon. 
 
