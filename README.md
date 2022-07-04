@@ -85,7 +85,7 @@ Next, run Create_Powershell_Daemon.ps1 which is located in the same directory. S
 * -t you **must** specify the token which you can receive from the eduVPN vpn-user-portal or api
 * -id you **must** specify the identifier of the app you registered (see prerequisites)
 * -cs you **must** specify the client secret you created for the app (see prerequisites)
-* -e you **must** specify the client secret endpoint (see prerequisites)
+* -e you **must** specify the token endpoint (see prerequisites)
 
 Add the Intune_management_script.ps1 to the Intune portal.
 
