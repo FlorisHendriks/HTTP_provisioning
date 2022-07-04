@@ -17,7 +17,6 @@ if(-not($s) -or -not($p) -or -not($t))
     
     if(`$Response.StatusCode -eq 200)
     { 
-
         # Install and deploy WireGuard tunnel if we received a wireguard-configuration
         if(`$Response.RawContent.Contains(`"wireguard-profile`"))
         {
