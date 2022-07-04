@@ -61,7 +61,7 @@ if(!($s -and $id -and $cs -and $t -and $e))
     `$deployedVpnDeviceI | Out-File `"`$PSScriptRoot\deployedVpnDeviceIds.txt`"
 }
 catch{
-`$_ | Out-File -FilePath `"`$PSScriptRoot\eduVPN-Intune.log`"
+`$_ | Out-File -FilePath `"`$PSScriptRoot\Powershell_Daemon.log`"
 `$_
 }" | Out-File -Encoding "UTF8" -FilePath "$PSScriptRoot\Powershell_Daemon.ps1"
 echo "$PSScriptRoot\Powershell_Daemon.ps1 has been created"
