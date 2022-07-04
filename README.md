@@ -59,13 +59,13 @@ Here we create a powershell Intune deployment script adapted to your organisatio
 
 ### Step 1
 Open powershell as administrator and clone the repository:
-
-    git clone https://github.com/FlorisHendriks98/HTTP_bulk_provisioning.git
-
+```powershell
+git clone https://github.com/FlorisHendriks98/HTTP_bulk_provisioning.git
+```
 Traverse to the repository:
-
-    cd HTTP_bulk_provisioning
-
+```powershell
+cd HTTP_bulk_provisioning
+```
 ### Step 2
 Run Create_Intune_Management_Script.ps1, specify the following parameters:
 
@@ -74,9 +74,9 @@ Run Create_Intune_Management_Script.ps1, specify the following parameters:
 * -t you **must** specify the token which you can receive from the eduVPN vpn-user-portal or api.
 
 Example:
-
-    ./Create_Intune_Management_Script.ps1 -p "default" -s "vpn.example.com" -t "256bit_token_placeholder"
-
+```powershell
+./Create_Intune_Management_Script.ps1 -p "default" -s "vpn.example.com" -t "256bit_token_placeholder"
+```
 In the same directory the file Intune_Management_Script.ps1 is created.
 
 Next, run Create_Powershell_Daemon.ps1 which is located in the same directory. Specify the following parameters: 
@@ -88,7 +88,7 @@ Next, run Create_Powershell_Daemon.ps1 which is located in the same directory. S
 * -e you **must** specify the token endpoint (see prerequisites)
 
 ```powershell
-./Create_Powershell_Daemon.ps1 -s "vpn.strategyit.nl" -t "256bit_token_placeholder" -id "Application_ID" -cs "client_secret" \
+./Create_Powershell_Daemon.ps1 -s "vpn.strategyit.nl" -t "256bit_token_placeholder" -id "Application_ID" -cs "client_secret" `
 -e "https://login.microsoftonline.com/hexadecimals_placeholder/oauth2/v2.0/token"
 ```
 
