@@ -45,7 +45,7 @@ This is the path we are going to implement to make eduVPN a system VPN.
 # Implementation
 
 ## Windows
-**NOTE**: We also have an instruction video on how to deploy eduVPN as a system VPN [here]() 
+**NOTE**: We also have an instruction video on how to deploy eduVPN as a system VPN [here](https://github.com/FlorisHendriks98/HTTP_bulk_provisioning#tutorial-video-implementing-eduvpn-as-a-system-vpn) 
 
 ### Prerequisites
 * A Windows device with Windows 10 or later
