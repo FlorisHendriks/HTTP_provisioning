@@ -6,7 +6,7 @@ param (
     [string]$t,
     [string]$e
  )
-if(-not($s) -or -not($id) -or -not($cs) -or -not($t) -or -not($e))
+if(!($s -and $id -and $cs -and $t -and $e))
 {
 	Throw 'You did not (fully) specify the parameters -s, -id, -cs, -t, and -e' 
 }
@@ -64,3 +64,4 @@ catch{
 `$_ | Out-File -FilePath `"`$PSScriptRoot\eduVPN-Intune.log`"
 `$_
 }" | Out-File -Encoding "UTF8" -FilePath "$PSScriptRoot\Powershell_Daemon.ps1"
+echo "$PSScriptRoot\Powershell_Daemon.ps1 has been created"
