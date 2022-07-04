@@ -88,8 +88,7 @@ Next, run Create_Powershell_Daemon.ps1 which is located in the same directory. S
 * -e you **must** specify the token endpoint (see prerequisites)
 
 ```powershell
-./Create_Powershell_Daemon.ps1 -s "vpn.strategyit.nl" -t "256bit_token_placeholder" -id "Application_ID" -cs "client_secret" `
--e "https://login.microsoftonline.com/hexadecimals_placeholder/oauth2/v2.0/token"
+./Create_Powershell_Daemon.ps1 -s "vpn.strategyit.nl" -t "256bit_token_placeholder" -id "Application_ID" -cs "client_secret" -e "https://login.microsoftonline.com/hexadecimals_placeholder/oauth2/v2.0/token"
 ```
 
     
