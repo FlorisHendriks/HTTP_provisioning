@@ -75,7 +75,7 @@ Run Create_Intune_Management_Script.ps1, specify the following parameters:
 
 Example:
 
-    ./DeployVpnConfig.ps1 -p "default" -s "vpn.example.com" -t "256bit_token_placeholder"
+    ./ Create_Intune_Management_Script.ps1 -p "default" -s "vpn.example.com" -t "256bit_token_placeholder"
 
 In the same directory the file Intune_Management_Script.ps1 is created.
 
