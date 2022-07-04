@@ -87,11 +87,14 @@ Next, run Create_Powershell_Daemon.ps1 which is located in the same directory. S
 * -cs you **must** specify the client secret you created for the app (see prerequisites)
 * -e you **must** specify the token endpoint (see prerequisites)
 
+./Create_Powershell_Daemon.ps1 -s "vpn.strategyit.nl" -t "256bit_token_placeholder" -id "Application_ID" -cs "client_secret" -e "https://login.microsoftonline.com/hexadecimals_placeholder/oauth2/v2.0/token"
+
+### Step 4
 Add the Intune_management_script.ps1 to the Intune portal.
 
 https://user-images.githubusercontent.com/47246332/176458532-2f1dd9b2-50a9-4e9d-9c0f-9c65da325ccd.mp4
 
-### Step 4
+### Step 5
 Now we deploy a powershell daemon that revokes an eduVPN config whenever a managed device gets removed from Intune.
 
 
