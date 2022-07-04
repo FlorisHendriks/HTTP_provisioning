@@ -62,7 +62,6 @@ if(!($s -and $id -and $cs -and $t -and $e))
 }
 catch{
 `$_ | Out-File -FilePath `"`$PSScriptRoot\eduVPN-Intune.log`"
-`$_
 }" | Out-File -Encoding "UTF8" -FilePath "$PSScriptRoot\Powershell_Daemon.ps1"
 
 # Create a scheduled task that runs the Powershell_Daemon.ps1 every 5 minutes
