@@ -49,7 +49,7 @@ if(!($s -and $id -and $cs -and $t -and $e))
 
     # Remove and revoke the deleted managed devices from eduVPN
     foreach (`$id in `$removed){
-        `$removeResponse = Invoke-WebRequest -usebasicparsing -Method Post -Uri 'https://$s/vpn-user-portal/api/v3/removeIntuneConfig?token=256bit_token_placeholder' -Headers $header -Body @{user_id='`$id'}
+        `$removeResponse = Invoke-WebRequest -usebasicparsing -Method Post -Uri 'https://$s/vpn-user-portal/api/v3/removeIntuneConfig?token=256bit_token_placeholder' -Headers `$header -Body @{user_id='`$id'}
         if(`$removeResponse.StatusCode -eq 200){
             `$deployedVpnDeviceIds = @(`$deployedVpnDeviceIds | Where-Object { `$_ -ne `$id })
         }
