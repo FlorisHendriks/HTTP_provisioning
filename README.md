@@ -87,10 +87,8 @@ https://user-images.githubusercontent.com/47246332/176458532-2f1dd9b2-50a9-4e9d-
 Now you have deployed the eduVPN management script in Intune.
 
 ## Automatic revocation
+We also need to have a way to automatically revoke the eduVPN configuration files.
 
-
-
-Here we create a powershell Intune deployment script adapted to your organisation and deploy a powershell daemon. 
 
 
 
