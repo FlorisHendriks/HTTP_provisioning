@@ -32,7 +32,7 @@ High-level concept:
 
 Unfortunately, a significant limitation of Intune is that we can not easily deploy a configuration for a specific managed device. [The device needs to be in a group in order to be able to deploy the configuration](https://docs.microsoft.com/en-us/graph/api/intune-shared-devicemanagementscript-assign?view=graph-rest-beta). Since every deployment is unique, every managed device needs to be in an unique group. This results into an overload of groups which makes managebility for IT administrators more difficult.
 
-In order to mitigate this, we deploy only one powershell/batch script that is uniform for every managed device. This contains an admin token that requests a VPN configuration for that device:
+In order to mitigate this, we deploy only one powershell/batch script that is uniform for every managed device. Every enrolled device receives this script and executes it (you can also use a specific group). Based on the profile, it either receives an openVPN or WireGuard configuration file (it uses the preferred protocol configured in the vpn-user-portal config file of eduVPN). Next the script installs an openVPN or WireGuard tunnel service and establishes the VPN connection.
 
 ![eduVPN provisioning(1) drawio](https://user-images.githubusercontent.com/47246332/175930131-8fdd0b31-9521-474f-a357-433337fcecf5.png)
 
@@ -44,10 +44,7 @@ This is the path we are going to implement to make eduVPN a system VPN.
 
 # Implementation
 
-## Windows
-**NOTE**: We also have an instruction video on how to deploy eduVPN as a system VPN [here](https://github.com/FlorisHendriks98/HTTP_bulk_provisioning#tutorial-video-implementing-eduvpn-as-a-system-vpn) 
-
-### Prerequisites
+## Prerequisites
 * A Windows device with Windows 10 or later
 * Access to an Intune tenant.
 * Git installed.
@@ -56,7 +53,9 @@ This is the path we are going to implement to make eduVPN a system VPN.
 * [Create a client secret for the app](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#option-2-create-a-new-application-secret)
 * [Find the token endpoint for the app](https://user-images.githubusercontent.com/47246332/177116133-9e070012-bb2a-4134-8263-e1c1a71add8b.png)
 
-Here we create a powershell Intune deployment script adapted to your organisation and deploy a powershell daemon. 
+## Deploying eduVPN Intune management script
+
+Here we create and deploy the Intune management script for eduVPN. 
 
 ### Step 1
 Open powershell as administrator and clone the repository:
@@ -80,6 +79,21 @@ Example:
 ```
 In the same directory the file Intune_Management_Script.ps1 is created.
 
+### Step 3
+Add the Intune_management_script.ps1 to the Intune portal.
+
+https://user-images.githubusercontent.com/47246332/176458532-2f1dd9b2-50a9-4e9d-9c0f-9c65da325ccd.mp4
+
+Now you have deployed the eduVPN management script in Intune.
+
+## Automatic revocation
+
+
+
+Here we create a powershell Intune deployment script adapted to your organisation and deploy a powershell daemon. 
+
+
+
 Next, run Create_Powershell_Daemon.ps1 which is located in the same directory. Specify the following parameters: 
 
 * -s you **must** specify the hostname of the VPN server
@@ -92,15 +106,10 @@ Next, run Create_Powershell_Daemon.ps1 which is located in the same directory. S
 ./Create_Powershell_Daemon.ps1 -s "vpn.example.com" -t "256bit_token_placeholder" -id "Application_ID" -cs "client_secret" -e "https://login.microsoftonline.com/hexadecimals_placeholder/oauth2/v2.0/token"
 ```
 This creates a powershell
-### Step 4
-Add the Intune_management_script.ps1 to the Intune portal.
 
-https://user-images.githubusercontent.com/47246332/176458532-2f1dd9b2-50a9-4e9d-9c0f-9c65da325ccd.mp4
 
 ### Step 5
 Now we deploy a powershell daemon that revokes an eduVPN config whenever a managed device gets removed from Intune.
 
-
-## Tutorial video implementing eduVPN as a system VPN
 
 
