@@ -87,7 +87,7 @@ https://user-images.githubusercontent.com/47246332/176458532-2f1dd9b2-50a9-4e9d-
 Now you have deployed the eduVPN management script in Intune.
 
 ## Automatic revocation
-We also need to have a way to automatically revoke the eduVPN configuration files. For this we have the Create_Powershell_Daemon.ps1 script. Launch this script on a Windows server (or a Windows10/11 workstation that is continuously on) as it creates a Powershell Daemon that polls Intune for every 5 minutes.
+We also need to have a way to automatically revoke the eduVPN configuration files whenever a managed device is unenrolled from Intune. For this we have the Create_Powershell_Daemon.ps1 script. Launch this script on a Windows server (or a Windows10/11 workstation that is continuously on) as it creates a Powershell Daemon that polls Intune for every 5 minutes.
 
 ### Step 1
 Next, run Create_Powershell_Daemon.ps1 which is located in the HTTP_bulk_provisioning directory. Specify the following parameters: 
@@ -103,10 +103,6 @@ Next, run Create_Powershell_Daemon.ps1 which is located in the HTTP_bulk_provisi
 ```
 
 Check if a task called "eduVPN Powershell Daemon" is running in Task Scheduler. Now you have succesfully deployed the powershell daemon to automatically revoke VPN configurations.
-
-
-### Step 5
-Now we deploy a powershell daemon that revokes an eduVPN config whenever a managed device gets removed from Intune.
 
 
 
