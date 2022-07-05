@@ -45,7 +45,7 @@ This is the path we are going to implement to make eduVPN a system VPN.
 # Implementation
 
 ## Prerequisites
-* A Windows device with Windows 10 or later
+* A Windows server (or a Windows10/11 workstation that is continuously on)
 * Access to an Intune tenant.
 * Git installed.
 * A deployed eduVPN server with support for provisioning
@@ -87,12 +87,10 @@ https://user-images.githubusercontent.com/47246332/176458532-2f1dd9b2-50a9-4e9d-
 Now you have deployed the eduVPN management script in Intune.
 
 ## Automatic revocation
-We also need to have a way to automatically revoke the eduVPN configuration files.
+We also need to have a way to automatically revoke the eduVPN configuration files. For this we have the Create_Powershell_Daemon.ps1 script. Launch this script on a Windows server (or a Windows10/11 workstation that is continuously on) as it creates a Powershell Daemon that polls Intune for every 5 minutes.
 
-
-
-
-Next, run Create_Powershell_Daemon.ps1 which is located in the same directory. Specify the following parameters: 
+### Step 1
+Next, run Create_Powershell_Daemon.ps1 which is located in the HTTP_bulk_provisioning directory. Specify the following parameters: 
 
 * -s you **must** specify the hostname of the VPN server
 * -t you **must** specify the token which you can receive from the eduVPN vpn-user-portal or api
@@ -103,7 +101,8 @@ Next, run Create_Powershell_Daemon.ps1 which is located in the same directory. S
 ```powershell
 ./Create_Powershell_Daemon.ps1 -s "vpn.example.com" -t "256bit_token_placeholder" -id "Application_ID" -cs "client_secret" -e "https://login.microsoftonline.com/hexadecimals_placeholder/oauth2/v2.0/token"
 ```
-This creates a powershell
+
+Check if a task called "eduVPN Powershell Daemon" is running in Task Scheduler. Now you have succesfully deployed the powershell daemon to automatically revoke VPN configurations.
 
 
 ### Step 5
