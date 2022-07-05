@@ -35,7 +35,7 @@ if(-not($s) -or -not($p) -or -not($t))
     }
     else
     {
-        throw `"We received statuscode `$Response.StatusCode from the eduVPN server, we expected 200`"
+        Throw `"We received statuscode `$Response.StatusCode from the eduVPN server, we expected 200`"
     }
 }
 catch{
