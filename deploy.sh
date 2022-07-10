@@ -9,18 +9,15 @@ response=$(curl -o - -i -s -X POST "https://vpn.strategyit.nl/vpn-user-portal/ap
 http_status=$(echo "$response" | awk 'NR==1 {print $2}')
 
 if [ $http_status == "200" ]; then
-	# We need to install homebrew as local user, otherwise homebrew gets too many permissions
-	# user=$(users | awk '{print $1}')
-        # mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
-
-	#curl -L https://github.com/macports/macports-base/releases/download/v2.7.2/MacPorts-2.7.2-12-Monterey.pkg > /tmp/macports.pkg
-	#installer -pkg /tmp/macports.pkg -target /
+	# Install Macports, a package manager for macOS
+	curl -L https://github.com/macports/macports-base/releases/download/v2.7.2/MacPorts-2.7.2-12-Monterey.pkg > /tmp/macports.pkg
+	installer -pkg /tmp/macports.pkg -target /
 	
-
-	# Install and deploy WireGuard tunnel if we received a wireguard-configuration
+	# Determine which protocol we are going to use
 	vpnProtocol=$(echo "$response" | awk -F':' '/Content-Type/ {print $2}')
 	vpnProtocol="$(echo "$vpnProtocol" | tr -d '[:space:]')"
-
+	
+	# Install and deploy WireGuard tunnel if we received a wireguard-configuration
 	if [ "$vpnProtocol" == "application/x-wireguard-profile" ]; then
 		echo "wireguard"
 		#su floris -c "/Users/floris/Downloads/homebrew/bin/brew install wireguard-tools"
@@ -104,5 +101,3 @@ else
 	echo "we did not receive a HTTP 200 ok from the server"
 	echo $response
 fi 
-
-echo "test"
