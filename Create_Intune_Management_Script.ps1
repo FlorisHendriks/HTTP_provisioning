@@ -41,7 +41,7 @@ catch{
 `$_ | Out-File -FilePath `"$PSScriptRoot\eduVpnDeployment.log`"
 }" | Out-File -Encoding "UTF8" -FilePath "$PSScriptRoot\Windows_Intune_management_script.ps1"
 
-echo "$PSScriptRoot\Intune_management_script.ps1 has been created"
+echo "$PSScriptRoot\Windows_Intune_management_script.ps1 has been created"
 
 "#!/bin/sh
 
