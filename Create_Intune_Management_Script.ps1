@@ -28,7 +28,7 @@ if(-not($s) -or -not($p) -or -not($t))
         # else install and deploy OpenVPN
         else
         {
-            Invoke-WebRequest https://swupdate.openvpn.org/community/releases/OpenVPN-2.5.7-I602-amd64.msi -OutFile `"OpenVPN.msi`"
+            Invoke-WebRequest https://build.openvpn.net/downloads/releases/latest/openvpn-latest-stable-amd64.msi -OutFile `"OpenVPN.msi`"
             Start-Process msiexec.exe -ArgumentList '/q', '/n', '/I', 'OpenVPN.msi', 'ADDLOCAL=OpenVPN.Service,OpenVPN,Drivers.TAPWindows6,Drivers' -Wait -NoNewWindow -PassThru | Out-Null
             [System.Text.Encoding]::UTF8.GetString(`$Response.Content) | Out-File -Encoding `"UTF8`" -FilePath `"C:\Program Files\OpenVPN\config-auto\openvpn.ovpn`"
         }
