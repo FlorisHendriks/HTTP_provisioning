@@ -172,7 +172,7 @@ if [ `$http_status == `"200`" ]; then
 	chown root:wheel /Library/LaunchDaemons/openvpn.plist
 	
 	# Load and execute the LaunchDaemon
-	# launchctl load /Library/LaunchDaemons/openvpn.plist
+	launchctl load /Library/LaunchDaemons/openvpn.plist
 
 	fi
 
