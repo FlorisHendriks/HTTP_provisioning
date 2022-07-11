@@ -45,13 +45,10 @@ This is the path we are going to implement to make eduVPN a system VPN.
 # Implementation
 
 ## Prerequisites
-* A Windows server (or a Windows10/11 workstation that is continuously on)
+* A device with PowerShell
 * Access to an Intune tenant.
 * Git installed.
 * A deployed eduVPN server with support for provisioning
-* [A registered app in Azure](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
-* [Create a client secret for the app](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#option-2-create-a-new-application-secret)
-* [Find the token endpoint for the app](https://user-images.githubusercontent.com/47246332/177116133-9e070012-bb2a-4134-8263-e1c1a71add8b.png)
 
 ## Deploying eduVPN Intune management script
 
@@ -86,23 +83,7 @@ https://user-images.githubusercontent.com/47246332/176458532-2f1dd9b2-50a9-4e9d-
 
 Now you have deployed the eduVPN management script in Intune.
 
-## Automatic revocation
-We also need to have a way to automatically revoke the eduVPN configuration files whenever a managed device is unenrolled from Intune. For this we have the Create_Powershell_Daemon.ps1 script. Launch this script on a Windows server (or a Windows10/11 workstation that is continuously on) as it creates a Powershell Daemon that polls Intune for every 5 minutes.
-
-### Step 1
-Next, run Create_Powershell_Daemon.ps1 which is located in the HTTP_bulk_provisioning directory. Specify the following parameters: 
-
-* -s you **must** specify the hostname of the VPN server
-* -t you **must** specify the token which you can receive from the eduVPN vpn-user-portal or api
-* -id you **must** specify the identifier of the app you registered (see prerequisites)
-* -cs you **must** specify the client secret you created for the app (see prerequisites)
-* -e you **must** specify the token endpoint (see prerequisites)
-
-```powershell
-./Create_Powershell_Daemon.ps1 -s "vpn.example.com" -t "256bit_token_placeholder" -id "Application_ID" -cs "client_secret" -e "https://login.microsoftonline.com/hexadecimals_placeholder/oauth2/v2.0/token"
-```
-
-Check if a task called "eduVPN Powershell Daemon" is running in Task Scheduler. Now you have succesfully deployed the powershell daemon to automatically revoke VPN configurations.
+# Troubleshooting
 
 
 
