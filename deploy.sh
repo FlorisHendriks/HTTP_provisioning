@@ -9,15 +9,31 @@ response=$(curl -o - -i -s -X POST "https://vpn.strategyit.nl/vpn-user-portal/ap
 http_status=$(echo "$response" | awk 'NR==1 {print $2}')
 
 if [ $http_status == "200" ]; then
-	# Install Macports, a package manager for macOS
-	curl -L https://github.com/macports/macports-base/releases/download/v2.7.2/MacPorts-2.7.2-12-Monterey.pkg > /tmp/macports.pkg
-	installer -pkg /tmp/macports.pkg -target /
+	# Install the latest Macports version, which is a package manager for macOS
 	
-	# Determine which protocol we are going to use
+	version=$( curl -fs --url 'https://raw.githubusercontent.com/macports/macports-base/master/config/RELEASE_URL' )
+	version=${version##*/v}
+	echo "$version"
+	
+	tar -zxf   MacPorts-${version}.tar.gz 2>/dev/null
+
+	cd MacPorts-${version}
+	CC=/usr/bin/cc ./configure \
+     	--prefix=/opt/local \
+     	--with-install-user=root \
+     	--with-install-group=admin \
+     	--with-directory-mode=0755 \
+     	--enable-readline \
+	&& make SELFUPDATING=1 \
+	&& make install SELFUPDATING=1
+
+	# update MacPorts itself
+	/opt/local/bin/port -dN selfupdate
+
+	# Install and deploy WireGuard tunnel if we received a wireguard-configuration
 	vpnProtocol=$(echo "$response" | awk -F':' '/Content-Type/ {print $2}')
 	vpnProtocol="$(echo "$vpnProtocol" | tr -d '[:space:]')"
-	
-	# Install and deploy WireGuard tunnel if we received a wireguard-configuration
+
 	if [ "$vpnProtocol" == "application/x-wireguard-profile" ]; then
 		echo "wireguard"
 		#su floris -c "/Users/floris/Downloads/homebrew/bin/brew install wireguard-tools"
@@ -64,8 +80,8 @@ if [ $http_status == "200" ]; then
 	else
 		# We received an openVPN config
 		mkdir -m 600 /etc/openvpn/
-		echo "$response" | perl -ne 'print unless 1.../^\s$/' > /etc/openvpn/openvpn.conf
-		port -N install openvpn2
+		echo "$response" | perl -ne 'print unless 1.../^\s$/' > /etc/openvpn/openvpn.ovpn
+		port -N install openvpn3
 	
 		echo "<?xml version='1.0' encoding='UTF-8'?>
 		<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
@@ -79,12 +95,14 @@ if [ $http_status == "200" ]; then
 		<key>Label</key><string>eduvpn.openvpn</string>
 		<key>ProgramArguments</key>
 		<array>
-			<string>/opt/local/sbin/openvpn2</string>
+			<string>/opt/local/bin/ovpncli</string>
 			<string>--config</string>
-			<string>/etc/openvpn/openvpn.conf</string>
+			<string>/etc/openvpn/openvpn.ovpn</string>
 		</array>
 		<key>KeepAlive</key><false/>
 		<key>RunAtLoad</key><true/>
+		<key>TimeOut</key>
+                <integer>90</integer>
 		</dict>
 		</plist>" > /Library/LaunchDaemons/openvpn.plist
 
@@ -92,7 +110,7 @@ if [ $http_status == "200" ]; then
 	chown root:wheel /Library/LaunchDaemons/openvpn.plist
 	
 	# Load and execute the LaunchDaemon
-	launchctl load /Library/LaunchDaemons/openvpn.plist
+	# launchctl load /Library/LaunchDaemons/openvpn.plist
 
 	fi
 
