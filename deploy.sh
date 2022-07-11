@@ -83,7 +83,6 @@ if [ $http_status == "200" ]; then
 			<string>--config</string>
 			<string>/etc/openvpn/openvpn.conf</string>
 		</array>
-		<key>Disabled</key><true/>
 		<key>KeepAlive</key><false/>
 		<key>RunAtLoad</key><true/>
 		</dict>
