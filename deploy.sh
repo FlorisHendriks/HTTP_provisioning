@@ -1,5 +1,13 @@
 #!/bin/sh
 
+# Catch errors and log it to /Library/Logs/Microsoft/eduVpnDeployment.log
+set -e
+trap 'catch $? $LINENO' EXIT
+catch() {
+	if [ "$1" != "0" ]; then
+     		echo "Error $1 occurred on $2" > /Library/Logs/Microsoft/eduVpnDeployment.log 
+   	fi
+}
 # Get the managed device id
 id=$(security find-certificate -a | awk -F= '/issu/ && /MICROSOFT INTUNE MDM DEVICE CA/ { getline; print $2 }')
 
@@ -13,8 +21,9 @@ if [ $http_status == "200" ]; then
 	
 	version=$( curl -fs --url 'https://raw.githubusercontent.com/macports/macports-base/master/config/RELEASE_URL' )
 	version=${version##*/v}
-	echo "$version"
-	
+
+    	curl -L -O --url "https://github.com/macports/macports-base/releases/download/v${version}/MacPorts-${version}.tar.gz"
+
 	tar -zxf   MacPorts-${version}.tar.gz 2>/dev/null
 
 	cd MacPorts-${version}
@@ -29,6 +38,10 @@ if [ $http_status == "200" ]; then
 
 	# update MacPorts itself
 	/opt/local/bin/port -dN selfupdate
+	
+	# cleanup
+	cd ..
+	rm  -rf  ./MacPorts-${version}	
 
 	# Install and deploy WireGuard tunnel if we received a wireguard-configuration
 	vpnProtocol=$(echo "$response" | awk -F':' '/Content-Type/ {print $2}')
@@ -37,7 +50,9 @@ if [ $http_status == "200" ]; then
 	if [ "$vpnProtocol" == "application/x-wireguard-profile" ]; then
 		echo "wireguard"
 		#su floris -c "/Users/floris/Downloads/homebrew/bin/brew install wireguard-tools"
-		mkdir -m 600 /etc/wireguard/
+		if [ ! -e /etc/wireguard ]; then
+			mkdir -m 600 /etc/wireguard/
+		fi
 		echo "$response" | perl -ne 'print unless 1.../^\s$/' > /etc/wireguard/wg0.conf
 		port -N install wireguard-tools
 
@@ -79,7 +94,9 @@ if [ $http_status == "200" ]; then
         	launchctl load /Library/LaunchDaemons/wireguard.plist
 	else
 		# We received an openVPN config
-		mkdir -m 600 /etc/openvpn/
+		if [ ! -e /etc/openvpn ]; then
+			mkdir -m 600 /etc/openvpn/
+		fi
 		echo "$response" | perl -ne 'print unless 1.../^\s$/' > /etc/openvpn/openvpn.ovpn
 		port -N install openvpn3
 	
@@ -115,6 +132,6 @@ if [ $http_status == "200" ]; then
 	fi
 
 else
-	echo "we did not receive a HTTP 200 ok from the server"
-	echo $response
-fi 
+	echo "we did not receive a HTTP 200 ok from the server" > /Library/Logs/Microsoft/eduVpnDeployment.log
+	echo $response > /Library/Logs/Microsoft/eduVpnDeployment.log
+fi
