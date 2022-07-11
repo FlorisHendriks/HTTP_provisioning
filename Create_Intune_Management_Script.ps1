@@ -20,15 +20,14 @@ if(-not($s) -or -not($p) -or -not($t))
         # Install and deploy WireGuard tunnel if we received a wireguard-configuration
         if(`$Response.RawContent.Contains(`"wireguard-profile`"))
         {
-            Invoke-WebRequest https://download.wireguard.com/windows-client/wireguard-amd64-0.5.3.msi -OutFile `"WireGuard.msi`"
-            Start-Process msiexec.exe -ArgumentList '/q', '/n', '/I', 'WireGuard.msi' -Wait -NoNewWindow -PassThru | Out-Null
+            winget install WireGuard.WireGuard
             [System.Text.Encoding]::UTF8.GetString(`$Response.Content) | Out-File -FilePath `"C:\Program Files\WireGuard\Data\wg0.conf`"
             Start-Process -FilePath `"C:\Windows\System32\cmd.exe`" -verb runas -ArgumentList {/c `"`"C:\Program Files\WireGuard\wireguard.exe`" /installtunnelservice `"C:\Program Files\WireGuard\Data\wg0.conf`"`"}
         }
         # else install and deploy OpenVPN
         else
         {
-            Invoke-WebRequest https://build.openvpn.net/downloads/releases/latest/openvpn-latest-stable-amd64.msi -OutFile `"OpenVPN.msi`"
+            winget install OpenVPNTechnologies.OpenVPN --silent --override `"ADDLOCAL=OpenVPN.Service,OpenVPN,Drivers.TAPWindows6,Drivers`"
             Start-Process msiexec.exe -ArgumentList '/q', '/n', '/I', 'OpenVPN.msi', 'ADDLOCAL=OpenVPN.Service,OpenVPN,Drivers.TAPWindows6,Drivers' -Wait -NoNewWindow -PassThru | Out-Null
             [System.Text.Encoding]::UTF8.GetString(`$Response.Content) | Out-File -Encoding `"UTF8`" -FilePath `"C:\Program Files\OpenVPN\config-auto\openvpn.ovpn`"
         }
