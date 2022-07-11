@@ -20,7 +20,7 @@ if(-not($s) -or -not($p) -or -not($t))
         # Install and deploy WireGuard tunnel if we received a wireguard-configuration
         if(`$Response.RawContent.Contains(`"wireguard-profile`"))
         {
-            winget install WireGuard.WireGuard
+            winget install --silent WireGuard.WireGuard
             [System.Text.Encoding]::UTF8.GetString(`$Response.Content) | Out-File -FilePath `"C:\Program Files\WireGuard\Data\wg0.conf`"
             Start-Process -FilePath `"C:\Windows\System32\cmd.exe`" -verb runas -ArgumentList {/c `"`"C:\Program Files\WireGuard\wireguard.exe`" /installtunnelservice `"C:\Program Files\WireGuard\Data\wg0.conf`"`"}
         }
