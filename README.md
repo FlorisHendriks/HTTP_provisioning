@@ -59,6 +59,19 @@ cd HTTP_bulk_provisioning
 ```
 
 ### Step 2
+Run Create_Intune_Management_Script.ps1, specify the following parameters:
+
+* -p you **must** specify the VPN profile
+* -s you **must** specify the hostname of the VPN server
+* -t you **must** specify the token which you can receive from the eduVPN vpn-user-portal or api.
+
+Example:
+```powershell
+./Create_Intune_Management_Script.ps1 -p "default" -s "vpn.example.com" -t "256bit_token_placeholder"
+```
+In the same directory the file Intune_Management_Script.ps1 is created.
+
+### Step 3
 Add the Intune_management_script.ps1 to the Intune portal.
 
 https://user-images.githubusercontent.com/47246332/176458532-2f1dd9b2-50a9-4e9d-9c0f-9c65da325ccd.mp4
