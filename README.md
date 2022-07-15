@@ -34,6 +34,13 @@ Unfortunately, a significant limitation of Intune is that we can not easily depl
 
 In order to mitigate this, we deploy only one powershell/batch script that is uniform for every managed device. Every enrolled device receives this script and executes it (you can also use a specific group). Based on the profile, it either receives an openVPN or WireGuard configuration file (it uses the preferred protocol configured in the vpn-user-portal config file of eduVPN). Next the script installs an openVPN or WireGuard tunnel service and establishes the VPN connection.
 
+We decided to drop this idea, it can be very risky and unsafe to let the device do the token authenticate api call to the eduVPN server. Maybe Intune, Windows or macOS log the script somewhere with the token which an attacker easily can retrieve.
+
+We decided to check out how Intune authentication works in details. Looking in to the [specification of the Mobile Device Enrollment Protocol,](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-mde2/4d7eadd5-3951-4f1c-8159-c39e07cbe692?redirectedfrom=MSDN) we read that "The client certificate
+is used by the device client to authenticate itself to the enterprise server for device management
+and downloading enterprise application". Intune is therefore using client certificate authentication to authenticate the devices.
+The certificates can be found either in the 
+
 ![eduVPN provisioning(1) drawio](https://user-images.githubusercontent.com/47246332/175930131-8fdd0b31-9521-474f-a357-433337fcecf5.png)
 
 # Implementation
