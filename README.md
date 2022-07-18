@@ -37,11 +37,9 @@ In order to mitigate this, we deploy only one powershell/batch script that is un
 We decided to drop this idea, it can be very risky and unsafe to let the device do the token authenticate api call to the eduVPN server. Maybe Intune, Windows or macOS log the script somewhere including the token which an attacker easily can retrieve.
 
 Next, we researched how Intune authenticates devices. In the [specification of the Mobile Device Enrollment Protocol,](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-mde2/4d7eadd5-3951-4f1c-8159-c39e07cbe692?redirectedfrom=MSDN) we read that "The client certificate
-is used by the device client to authenticate itself to the enterprise server for device management and downloading enterprise application". Intune is therefore using client certificate authentication to authenticate the devices. We can reuse these certificates to authenticate API calls to the eduVPN server:
-
+is used by the device client to authenticate itself to the enterprise server for device management and downloading enterprise application". Intune is therefore mutual TLS to authenticate the devices. We can reuse these certificates to authenticate API calls to the eduVPN server:
 
 ![sendApiCall drawio(1)](https://user-images.githubusercontent.com/47246332/179229276-8c6f66b6-1b15-473a-b040-0ebfaa7ce8e4.png)
-
 
 # Implementation
 
