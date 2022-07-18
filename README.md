@@ -39,7 +39,8 @@ We decided to drop this idea, it can be very risky and unsafe to let the device 
 Next, we researched how Intune authenticates devices. In the [specification of the Mobile Device Enrollment Protocol,](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-mde2/4d7eadd5-3951-4f1c-8159-c39e07cbe692?redirectedfrom=MSDN) we read that "The client certificate
 is used by the device client to authenticate itself to the enterprise server for device management and downloading enterprise application". Intune is therefore mutual TLS to authenticate the devices. We can reuse these certificates to authenticate API calls to the eduVPN server:
 
-![sendApiCall drawio(1)](https://user-images.githubusercontent.com/47246332/179229276-8c6f66b6-1b15-473a-b040-0ebfaa7ce8e4.png)
+![sendApiCall(1) drawio(1)](https://user-images.githubusercontent.com/47246332/179502797-ed0d6438-8c2b-48b0-9a84-b65c860e385b.png)
+
 
 # Implementation
 
