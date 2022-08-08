@@ -37,10 +37,19 @@ In order to mitigate this, we deploy only one powershell/batch script that is un
 We decided to drop this idea, it is very risky and unsafe to let the device do the token authenticate api call to the eduVPN server. Intune logs the script including the token which an attacker can then easily retrieve.
 
 Next, we researched how Intune authenticates devices. In the [specification of the Mobile Device Enrollment Protocol,](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-mde2/4d7eadd5-3951-4f1c-8159-c39e07cbe692?redirectedfrom=MSDN) we read that "The client certificate
-is used by the device client to authenticate itself to the enterprise server for device management and downloading enterprise application". Intune is therefore using mutual TLS to authenticate the devices. We can reuse these certificates to authenticate API calls to the eduVPN server:
+is used by the device client to authenticate itself to the enterprise server for device management and downloading enterprise application". Intune is therefore using mutual TLS to authenticate the devices.
+
+When a device enrolls into Intune, it gets a certificate with the Intune managed device id as Common Name of the certificate. In the extension list of the certificate (oid 1.2.840.113556.5.14) it contains the tenant ID of the device. It is signed by an intermediate certificate authority called Microsoft Intune MDM Device CA. The root certificate of the device certificate is the Microsoft Intune Root Certification Authority. 
+
+For Windows this certificate is either stored in the System user certificate store (the device is enrolled only in Intune) or in the Computer certificate store (if the device is enrolled in both Azure AD and Intune). In macOS the device certificate is always stored in the system keychain. 
+
+We can reuse these certificates to authenticate API calls to the eduVPN server:
 
 ![sendApiCall(1) drawio(1)](https://user-images.githubusercontent.com/47246332/179502797-ed0d6438-8c2b-48b0-9a84-b65c860e385b.png)
 
+When a device enrolls into Intune, it gets a certificate with the Intune managed device id as Common Name of the certificate. It is signed by an intermediate certificate authority called Microsoft Intune MDM Device CA. The root certificate of the device certificate is the Microsoft Intune Root Certification Authority. For Windows this certificate is either stored in the System user certificate store (the device is enrolled only in Intune) or in the Computer certificate store (if the device is enrolled in both Azure AD and Intune). In macOS the device certificate is always stored in the system keychain. 
+
+So how does Intune verify these certificates exactly? Unfortunately there isn't any proper technical documentation (at the time of writing this paper) on Intune device authentication. However, we can make an educated guess how this works. The device certificate contains In the extension of the device certificate it contains an oid called "1.2.840.113556.5.14".  
 
 # Implementation
 
