@@ -45,10 +45,7 @@ So how does Intune verify these certificates exactly? Unfortunately there isn't 
 
 We can reuse this Intune device authentication process to authenticate API calls to the eduVPN server:
 
-
-![sendApiCall(1)(2) drawio(2)](https://user-images.githubusercontent.com/47246332/183405112-dcdaac51-7e3f-4e49-a887-e1f4a2d7af80.png)
-
-
+![sendApiCall(1)(2) drawio(3)](https://user-images.githubusercontent.com/47246332/183408227-0c58d4f1-230c-4458-a35e-e47e6a8da55b.png)
 
 # Revocation
 Whenever there is a device compromised we only have to delete the device from Intune. This will remove the certificate from the certificate store (if a connection gets established between Intune and the device) and the managed device id from the managed device id list in Intune. The device will therefore not be able to retrieve new VPN config files since eduVPN checks if the managed device id of the certificate is within the list of managed device ids in Intune. 
