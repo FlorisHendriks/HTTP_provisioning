@@ -50,7 +50,8 @@ So how does Intune verify these certificates exactly? Unfortunately there isn't 
 We can reuse this Intune device authentication process to authenticate API calls to the eduVPN server:
 
 
-![sendApiCall(1)(2) drawio](https://user-images.githubusercontent.com/47246332/183404773-ca06680a-5756-415b-abe0-44338268ce25.png)
+![sendApiCall(1)(2) drawio(2)](https://user-images.githubusercontent.com/47246332/183405112-dcdaac51-7e3f-4e49-a887-e1f4a2d7af80.png)
+
 
 
 # Revocation
