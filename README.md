@@ -43,13 +43,17 @@ When a device enrolls into Intune, it gets a certificate with the Intune managed
 
 For Windows this certificate is either stored in the System user certificate store (the device is enrolled only in Intune) or in the Computer certificate store (if the device is enrolled in both Azure AD and Intune). In macOS the device certificate is always stored in the system keychain. 
 
-![sendApiCall(1) drawio(1)](https://user-images.githubusercontent.com/47246332/179502797-ed0d6438-8c2b-48b0-9a84-b65c860e385b.png)
-
 When a device enrolls into Intune, it gets a certificate with the Intune managed device id as Common Name of the certificate. It is signed by an intermediate certificate authority called Microsoft Intune MDM Device CA. The root certificate of the device certificate is the Microsoft Intune Root Certification Authority. For Windows this certificate is either stored in the System user certificate store (the device is enrolled only in Intune) or in the Computer certificate store (if the device is enrolled in both Azure AD and Intune). In macOS the device certificate is always stored in the system keychain. 
 
-So how does Intune verify these certificates exactly? Unfortunately there isn't any proper technical documentation (at the time of writing this paper) on Intune device authentication. However, we can make an educated guess how this works. The device certificate contains In the extension of the device certificate it contains an oid called "1.2.840.113556.5.14" which has the tenant ID as value. Whenever the device certificate is sent to Microsoft for authentication, Microsoft will check if the tenant ID exists, if the device belongs to that tenant and if the certificate is signed by the Microsoft CA.
+So how does Intune verify these certificates exactly? Unfortunately there isn't any proper technical documentation (at the time of writing this paper) on Intune device authentication. However, we can make an educated guess how this works. The device certificate contains In the extension of the device certificate it contains an oid called "1.2.840.113556.5.14" which has the tenant ID as value. Whenever the device certificate is sent to Microsoft for authentication, Microsoft will check if the tenant ID exists, if the device belongs to that tenant (using the managed device ID in the CN of the certicate) and if the certificate is signed by the Microsoft CA.
 
 We can also reuse this Intune device authentication process to authenticate API calls to the eduVPN server:
+
+![sendApiCall(1) drawio(1)](https://user-images.githubusercontent.com/47246332/179502797-ed0d6438-8c2b-48b0-9a84-b65c860e385b.png)
+
+
+# Revocation
+Whenever there is a device compromised we only have to delete the device from Intune. This will remove the certificate from the certificate store (if a connection gets established between Intune and the device) and the managed device id from the managed device id list in Intune. The device will therefore not be able to retrieve new VPN config files since eduVPN checks if the managed device id of the certificate is within the list of managed device ids in Intune. 
 
 # Implementation
 
