@@ -55,7 +55,9 @@ for Windows:
 
 A limitation of this path is that it supports only OpenVPN. OpenVPN, unlike WireGuard, has the feature to authenticate via certificates. We would like to also support WireGuard as that is a more [efficient protocol](https://dl.acm.org/doi/pdf/10.1145/3374664.3379532).
 
-In order to do this we can set up as an intermediate webserver between the managed device and eduVPN. When a device enrolls to Intune it will get the Intune certificate. Next we also deploy via Intune a script that is run on the managed device. The script does an API call to the intermediate webserver authenticated with the certificate. Then the webserver checks if the certificate belongs to the correct tenant, if the device belongs to that tenant (using the managed device id) and if the certificate is signed by the Microsoft CA. When the certificate is validated, it requests a VPN config (either OpenVPN or WireGuard at eduVPN. eduVPN sends back a  
+In order to do this we can set up as an intermediate webserver between the managed device and eduVPN. When a device enrolls to Intune it will get the Intune certificate. Next we also deploy via Intune a script that is run on the managed device. The script does an API call to the intermediate webserver authenticated with the certificate. Then the webserver checks if the certificate belongs to the correct tenant, if the device belongs to that tenant (using the managed device id) and if the certificate is signed by the Microsoft CA. When the certificate is validated, it requests a VPN config (either OpenVPN or WireGuard at eduVPN. eduVPN sends back a VPN config to the intermediate server. The intermediate server then forwards the config to the managed device. The managed device installs the config and establishes the VPN connection with eduVPN. A high-level overview:
+
+![sendApiCall(1)(2)(2)(2) drawio(2)](https://user-images.githubusercontent.com/47246332/183864967-530bc715-ce1d-4128-9ac6-14ff87317c9e.png)
 
 
 # Revocation
