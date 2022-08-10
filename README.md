@@ -57,8 +57,7 @@ A limitation of this path is that it supports only OpenVPN. OpenVPN, unlike Wire
 
 In order to do this we can set up as an intermediate webserver between the managed device and eduVPN. When a device enrolls to Intune it will get the Intune certificate. Next we also deploy via Intune a script that is run on the managed device. The script does an API call to the intermediate webserver authenticated with the certificate. Then the webserver checks if the certificate belongs to the correct tenant, if the device belongs to that tenant (using the managed device id) and if the certificate is signed by the Microsoft CA. When the certificate is validated, it requests a VPN config (either OpenVPN or WireGuard at eduVPN. eduVPN sends back a VPN config to the intermediate server. The intermediate server then forwards the config to the managed device. The managed device installs the config and establishes the VPN connection with eduVPN. A high-level overview:
 
-![sendApiCall(1)(2)(2)(2) drawio(2)](https://user-images.githubusercontent.com/47246332/183864967-530bc715-ce1d-4128-9ac6-14ff87317c9e.png)
-
+![sendApiCall(1)(2)(2)(2) drawio(3)](https://user-images.githubusercontent.com/47246332/183869452-e755c057-6002-4cb0-adef-bc97358d11dd.png)
 
 # Revocation
 Whenever there is a device compromised we only have to delete the device from Intune. On the Intermediate webserver we will keep track of the managed device ids that we send configs to. We will also set an hourly cronjob that uses the Intune API to retrieve the current list of managed device ids. If the managed device id list we keep locally has an id that the list we receive from Intune does not exist we know that that device has been deleted in Intune. The intermediate webserver is then going to ask eduVPN to revoke that VPN connection for that particular managed device. 
