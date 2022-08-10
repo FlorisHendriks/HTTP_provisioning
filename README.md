@@ -44,6 +44,7 @@ When a device enrolls into Intune, it gets a certificate with the Intune managed
 So how does Intune verify these certificates exactly? Unfortunately there isn't any proper technical documentation (at the time of writing this paper) on Intune device authentication. However, we can make an educated guess how this works. Whenever the device certificate is sent to Microsoft for authentication, Microsoft will check if the tenant ID exists, if the device belongs to that tenant (using the managed device ID in the CN of the certicate) and if the certificate is signed by the Microsoft CA.
 
 We can reuse this Intune device authentication process to authenticate API calls to the eduVPN server:
+
 for macOS:
 
 ![sendApiCall(1)(2)(2)(2) drawio](https://user-images.githubusercontent.com/47246332/183854290-7b48b7f2-739c-405c-810e-114f818aad44.png)
