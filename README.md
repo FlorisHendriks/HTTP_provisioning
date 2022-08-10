@@ -53,7 +53,7 @@ for Windows:
 
 ![sendApiCall(1)(2)(2)(2) drawio(1)](https://user-images.githubusercontent.com/47246332/183854237-60f4de43-12a5-4c97-bb3f-d6b5a1767ffd.png)
 
-A limitation of this path is that it supports only OpenVPN since it supports, unlike WireGuard, certificate authentication. We would like to also support WireGuard as that is a more [efficient protocol](https://dl.acm.org/doi/pdf/10.1145/3374664.3379532).
+A limitation of this path is that it supports only OpenVPN. OpenVPN, unlike WireGuard, has the feature to authenticate via certificates. We would like to also support WireGuard as that is a more [efficient protocol](https://dl.acm.org/doi/pdf/10.1145/3374664.3379532).
 
 In order to do this we can set up as an intermediate webserver between the managed device and eduVPN.
 
