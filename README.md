@@ -64,7 +64,7 @@ Whenever there is a device compromised we only have to delete the device from In
 
 The managed device can't request a new config as well, as the intermediate server checks if the managed device id is in the Intune device list.
 # Implementation
-
+The repository gives a rough mockup of the implementation. verify-cn.sh shows the verification step    
 ## Prerequisites
 * A device with PowerShell
 * Access to an Intune tenant.
