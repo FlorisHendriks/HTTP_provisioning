@@ -64,48 +64,4 @@ Whenever there is a device compromised we only have to delete the device from In
 
 The managed device can't request a new config as well, as the intermediate server checks if the managed device id is in the Intune device list.
 # Implementation
-The repository gives a rough mockup of the implementation. verify-cn.sh shows the verification step    
-## Prerequisites
-* A device with PowerShell
-* Access to an Intune tenant.
-* Git installed.
-* A deployed eduVPN server with support for provisioning
-
-## Deploying eduVPN Intune management script
-
-Here we create and deploy the Intune management script for eduVPN. 
-
-### Step 1
-Open powershell as administrator and clone the repository:
-```powershell
-git clone https://github.com/FlorisHendriks98/HTTP_bulk_provisioning.git
-```
-Traverse to the repository:
-```powershell
-cd HTTP_bulk_provisioning
-```
-
-### Step 2
-Run Create_Intune_Management_Script.ps1, specify the following parameters:
-
-* -p you **must** specify the VPN profile
-* -s you **must** specify the hostname of the VPN server
-* -t you **must** specify the token which you can receive from the eduVPN vpn-user-portal or api.
-
-Example:
-```powershell
-./Create_Intune_Management_Script.ps1 -p "default" -s "vpn.example.com" -t "256bit_token_placeholder"
-```
-In the same directory the file Intune_Management_Script.ps1 is created.
-
-### Step 3
-Add the Intune_management_script.ps1 to the Intune portal.
-
-https://user-images.githubusercontent.com/47246332/176458532-2f1dd9b2-50a9-4e9d-9c0f-9c65da325ccd.mp4
-
-Now you have deployed the eduVPN management script in Intune.
-
-# Troubleshooting
-
-
-
+The repository gives a rough mockup of the implementation. verify-cn.sh shows how to implement verification step 4,5 and 6 in the picture above.
