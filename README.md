@@ -38,7 +38,10 @@ e.g.
   
   ![image](https://user-images.githubusercontent.com/47246332/185739857-77a1c2e3-475e-48cf-99fd-6c079c7cb637.png)
 
-  When using the command line, we can execute this command:
+  When using the command line (as admin), we can execute this command:
+  
+  msiexec /q /n /I \<path to msi installer\> ADDLOCAL=OpenVPN.Service,OpenVPN,Drivers.TAPWindows6,Drivers
+  
 2. Get VPN configuration file to the device
 3. Put the VPN configuration file in the directiory C:\Program Files\OpenVPN\config-auto (or where you installed OpenVPN)
 4. Either reboot the device or restart the OpenVPNService (When OpenVPNService is started, a separate OpenVPN
