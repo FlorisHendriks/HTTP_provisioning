@@ -44,7 +44,7 @@ e.g.
   
 2. Get VPN configuration file to the device
 3. Put the VPN configuration file in the directiory C:\Program Files\OpenVPN\config-auto (or where you installed OpenVPN)
-4. Either reboot the device or restart the OpenVPNService (When OpenVPNService is started, a separate OpenVPN
+4. Either reboot the device or restart the OpenVPNService (when OpenVPNService is started, a separate OpenVPN
 process will be instantiated for each configuration file that is found in \config-auto directory.)
   
 ### OpenVPN for macOS
