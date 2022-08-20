@@ -31,13 +31,18 @@ e.g.
 ### OpenVPN for Windows
 1. [Download OpenVPN Community edition](https://openvpn.net/community-downloads/). When installing the msi, we need to make sure that we also install the OpenVPN tunnel manager service, this is by default not enabled. 
   When using the installer GUI, click customize.
+  
   ![image](https://user-images.githubusercontent.com/47246332/185739715-32c5d992-3a22-4d55-b220-fcab7f29c7ca.png)
+  
   Enable the openvpn service feature:
+  
   ![image](https://user-images.githubusercontent.com/47246332/185739857-77a1c2e3-475e-48cf-99fd-6c079c7cb637.png)
 
   When using the command line, we can execute this command:
 2. Get VPN configuration file to the device
-  3. 
+3. Put the VPN configuration file in the directiory C:\Program Files\OpenVPN\config-auto (or where you installed OpenVPN)
+4. Either reboot the device or restart the OpenVPNService (When OpenVPNService is started, a separate OpenVPN
+process will be instantiated for each configuration file that is found in \config-auto directory.)
   
 ### OpenVPN for macOS
 
