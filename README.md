@@ -20,7 +20,7 @@ Here we describe how we can use WireGuard and OpenVPN client applications to est
 1. Download and install WireGuard on the device
 2. Get VPN configuration file to the device
 3. Run the following command as admin (or system user):
-<path to WireGuard.exe> /installtunnelservice <path to WireGuard config file>
+\<path to WireGuard.exe\> /installtunnelservice \<path to WireGuard config file\>
 e.g.
 "C:\Program Files\WireGuard\wireguard.exe" /installtunnelservice C:\wg0.conf
 ### Wireguard for macOS
