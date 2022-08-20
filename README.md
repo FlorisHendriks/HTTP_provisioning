@@ -17,7 +17,7 @@ With HTTP bulk provisioning the main idea is that, when a device enrolls to Intu
 ## Basic protocol of our solution
 Here we describe how we can use WireGuard and OpenVPN client applications to establish a VPN connection that starts on boot.
 ### Wireguard for Windows
-1. Download and install WireGuard on the device
+1. [Download](https://www.wireguard.com/install/) and install WireGuard on the device
 2. Get VPN configuration file to the device
 3. Run the following command as admin (or system user):
 
