@@ -14,24 +14,35 @@ In this document we are going to solve these drawbacks of the current authorizat
 
 With HTTP bulk provisioning the main idea is that, when a device enrolls to Intune, we notify eduVPN. eduVPN generates a VPN configuration for this device. Finally, we send the VPN configuration to Intune and deploys it to the enrolled device. 
 
-## Building blocks of our solution
+## Basic protocol of our solution
 Here we describe how we can use WireGuard and OpenVPN client applications to establish a VPN connection that starts on boot.
 ### Wireguard for Windows
-* We install WireGuard on the device
-* Run the following command as admin (or system user):
+1. Download and install WireGuard on the device
+2. Get VPN configuration file to the device
+3. Run the following command as admin (or system user):
 <path to WireGuard.exe> /installtunnelservice <path to WireGuard config file>
 e.g.
 "C:\Program Files\WireGuard\wireguard.exe" /installtunnelservice C:\wg0.conf
 ### Wireguard for macOS
 
 ### OpenVPN for Windows
+1. [Download OpenVPN Community edition](https://openvpn.net/community-downloads/). When installing the msi, we need to make sure that we also install the OpenVPN tunnel manager service, this is by default not enabled. 
+  When using the installer GUI, click customize.
+  ![image](https://user-images.githubusercontent.com/47246332/185739715-32c5d992-3a22-4d55-b220-fcab7f29c7ca.png)
+  Enable the openvpn service feature:
+  ![image](https://user-images.githubusercontent.com/47246332/185739857-77a1c2e3-475e-48cf-99fd-6c079c7cb637.png)
 
+  When using the command line, we can execute this command:
+2. Get VPN configuration file to the device
+  3. 
+  
 ### OpenVPN for macOS
 
 
 
 
 
+  
 To communicate with Intune we can use its API called [Graph API](https://docs.microsoft.com/en-us/graph/use-the-api). With that API we can, for example, retrieve a list of managed devices, delete a device and configure a configuration profile.
 
 [The Graph API has support for subscriptions when a resource changes](https://docs.microsoft.com/en-us/graph/api/resources/webhooks?context=graph%2Fapi%2F1.0&view=graph-rest-1.0). In other words, the Graph API is able to send a webhook to a service when data is created, updated or deleted. However, we can't use this service. Microsoft only has support for subscriptions to specific sets of data. It supports for example users, to-do tasks and Microsoft Teams messages, but it does not support managed devices.
