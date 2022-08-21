@@ -14,7 +14,7 @@ In this document we are going to solve these drawbacks of the current authorizat
 
 With HTTP bulk provisioning the main idea is that, when a device enrolls to Intune, we notify eduVPN. eduVPN generates a VPN configuration for this device. Finally, we send the VPN configuration to Intune and deploys it to the enrolled device. 
 
-## Basic protocol of our solution
+## High-level protocol of our solution
 Here we describe how we can use WireGuard and OpenVPN client applications to establish a VPN connection that starts on boot.
 ### Wireguard for Windows
 1. [Download](https://www.wireguard.com/install/) and install WireGuard on the device
@@ -58,7 +58,8 @@ process will be instantiated for each configuration file that is found in \confi
 4. Run the command: Launchctl load \<name_of_plist_file\>.plist
 
 ## Getting the VPN configuration file to the device
-Step 2 of the high-level protocol is the most difficult part. We need to get the VPN configuration file to the device.
+Step 2 of the high-level protocol is the most difficult part. We need to get the VPN configuration file to the device. Many organisations use Intune to remotely manage devices and automate processes. We are therefore exploring Intune to see if it can help use delegate these VPN configuration files.
+
 To communicate with Intune we can use its API called [Graph API](https://docs.microsoft.com/en-us/graph/use-the-api). With that API we can, for example, retrieve a list of managed devices, delete a device and configure a configuration profile.
 
 [The Graph API has support for subscriptions when a resource changes](https://docs.microsoft.com/en-us/graph/api/resources/webhooks?context=graph%2Fapi%2F1.0&view=graph-rest-1.0). In other words, the Graph API is able to send a webhook to a service when data is created, updated or deleted. However, we can't use this service. Microsoft only has support for subscriptions to specific sets of data. It supports for example users, to-do tasks and Microsoft Teams messages, but it does not support managed devices.
