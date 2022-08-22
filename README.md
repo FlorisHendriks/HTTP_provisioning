@@ -59,7 +59,19 @@ process will be instantiated for each configuration file that is found in \confi
 4. Run the command: sudo launchctl load \<name_of_plist_file\>.plist
 
 ## Getting the VPN configuration file to the device
-Step 2 of the high-level protocol is the most difficult part. We need to get the VPN configuration file to the device. Many organisations use Intune to remotely manage devices and automate processes. We are therefore exploring Intune to see if it can help use delegate these VPN configuration files.
+Step 2 of the high-level protocol is the most difficult part. We need to get the VPN configuration file to the device.
+
+When it comes down to distributing files to managed devices we mainly have two options:
+1. We distribute the config files via GPO
+2. We use a file copy command (e.g. Robocopy) to the managed devices via SMB.
+
+The first option is not [supported by macOS](https://stackoverflow.com/questions/44568362/i-am-looking-for-a-way-to-push-mac-software-from-ad-server-to-connected-mac-clie) without a third party tool.
+
+The second options is supported by macOS but you have to enable SMB manually which can be time consuming. Moreover, SMB has historically shown that it is [not really safe to use](https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=smb), so we would like to refrain from that protocol.
+
+In order to properly be able to manage macOS as well, organisations often choose to use the mobile device management service Microsoft Intune. We therefore explored Intune to see if it can help us delegate these VPN configuration files.
+
+---
 
 To communicate with Intune we can use its API called [Graph API](https://docs.microsoft.com/en-us/graph/use-the-api). With that API we can, for example, retrieve a list of managed devices, delete a device and configure a configuration profile.
 
