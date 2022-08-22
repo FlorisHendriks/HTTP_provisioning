@@ -31,6 +31,7 @@ It isn't possible to start a WireGuard tunnel on boot with the WireGuard macOS a
 1. Install wireguard-tools which can be installed using either [Homebrew](https://brew.sh/) or [Macports](https://www.macports.org/install.php).
 2. Get VPN configuration file to the device
 3. Put a plist file in /Library/LaunchDaemons/ (which can be found in the Github repository)
+4. Run the command: Launchctl load \<name_of_plist_file\>.plist
 
 ### OpenVPN for Windows
 1. [Download OpenVPN Community edition](https://openvpn.net/community-downloads/). When installing the msi, we need to make sure that we also install the OpenVPN tunnel manager service, this is by default not enabled. 
