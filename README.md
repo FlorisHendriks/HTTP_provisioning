@@ -62,8 +62,8 @@ process will be instantiated for each configuration file that is found in \confi
 Step 2 of the high-level protocol is the most difficult part. We need to get the VPN configuration file to the device.
 
 When it comes down to distributing files to managed devices we mainly have two options:
-1. We distribute the config files via GPO
-2. We use a file copy command (e.g. Robocopy) to the managed devices via SMB.
+1. Distribute the config files via GPO
+2. Use a file copy command (e.g. Robocopy) to the managed devices via SMB.
 
 The first option is not [supported by macOS](https://stackoverflow.com/questions/44568362/i-am-looking-for-a-way-to-push-mac-software-from-ad-server-to-connected-mac-clie) without a third party tool.
 
