@@ -67,7 +67,7 @@ When it comes down to distributing files to managed devices we mainly have two o
 
 The first option is not [supported by macOS](https://stackoverflow.com/questions/44568362/i-am-looking-for-a-way-to-push-mac-software-from-ad-server-to-connected-mac-clie) without a third party tool.
 
-The second options is supported by macOS but you have to enable SMB manually which can be time consuming. Moreover, SMB has historically shown that it is [not really safe to use](https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=smb), so we would like to refrain from that protocol.
+The second option is supported by macOS but you have to enable SMB manually which can be time consuming. Moreover, SMB has historically shown that it is [not really safe to use](https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=smb), so we would like to refrain from that protocol.
 
 In order to properly be able to manage macOS as well, organisations often choose to use the mobile device management service Microsoft Intune. We therefore explored Intune to see if it can help us delegate these VPN configuration files.
 
