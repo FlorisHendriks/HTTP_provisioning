@@ -31,7 +31,7 @@ It isn't possible to start a WireGuard tunnel on boot with the WireGuard macOS a
 1. Install wireguard-tools which can be installed using either [Homebrew](https://brew.sh/) or [Macports](https://www.macports.org/install.php).
 2. Get VPN configuration file to the device
 3. Put a plist file in /Library/LaunchDaemons/ (which can be found in the Github repository)
-4. Run the command: Launchctl load \<name_of_plist_file\>.plist
+4. Run the command: sudo launchctl load \<name_of_plist_file\>.plist
 
 ### OpenVPN for Windows
 1. [Download OpenVPN Community edition](https://openvpn.net/community-downloads/). When installing the msi, we need to make sure that we also install the OpenVPN tunnel manager service, this is by default not enabled. 
@@ -56,7 +56,7 @@ process will be instantiated for each configuration file that is found in \confi
 1. Install either the [TunnelBlick app](https://tunnelblick.net/downloads.html) or the OpenVPN Homebrew/Macports package.
 2. Get VPN configuration file to the device
 3. Put a plist file in /Library/LaunchDaemons/ (which can be found in the Github repository)
-4. Run the command: Launchctl load \<name_of_plist_file\>.plist
+4. Run the command: sudo launchctl load \<name_of_plist_file\>.plist
 
 ## Getting the VPN configuration file to the device
 Step 2 of the high-level protocol is the most difficult part. We need to get the VPN configuration file to the device. Many organisations use Intune to remotely manage devices and automate processes. We are therefore exploring Intune to see if it can help use delegate these VPN configuration files.
