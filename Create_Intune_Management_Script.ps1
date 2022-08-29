@@ -192,6 +192,6 @@ if [ `$http_status == `"200`" ]; then
 else
 	echo `"we did not receive a HTTP 200 ok from the server`" > /Library/Logs/Microsoft/eduVpnDeployment.log
 	echo `$response > /Library/Logs/Microsoft/eduVpnDeployment.log
-fi" | Out-File -Encoding "UTF8" -FilePath "$PSScriptRoot\macOS_Intune_management_script.ps1"
+fi" | Out-File -Encoding "UTF8" -FilePath "$PSScriptRoot\macOS_Intune_management_script.sh"
 
 echo "$PSScriptRoot\macOS_management_script.ps1 has been created"
