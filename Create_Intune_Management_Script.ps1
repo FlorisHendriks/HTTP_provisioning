@@ -84,7 +84,7 @@ catch() {
 # Get the managed device id
 id=`$(security find-certificate -a | awk -F= '/issu/ && /MICROSOFT INTUNE MDM DEVICE CA/ { getline; print `$2 }')
 # Retrieve config from eduVPN
-response=`$(curl -o - -i -s -X POST `"https://$s/vpn-user-portal/api/v3/deployIntuneConfig?token=$t`" -d `"profile_id=$p&user_id=`$id`")
+response=`$(curl -o - -i -s -X POST `"https://$s`" -d `"profile_id=$p&user_id=`$id`")
 http_status=`$(echo `"`$response`" | awk 'NR==1 {print `$2}')
 if [ `$http_status == `"200`" ]; then
 	# Install the latest Macports version, which is a package manager for macOS
