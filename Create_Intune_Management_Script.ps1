@@ -10,23 +10,18 @@ if(-not($s) -or -not($p))
 "try{
     # Get managed device id
     `$DeviceID = Get-ItemPropertyValue HKLM:\SOFTWARE\Microsoft\Provisioning\Diagnostics\Autopilot\EstablishedCorrelations -Name EntDMID
-
     # Get the certificate from either the system user store or the local machine, depends on how you enroll the device. 
     `$certStorePath  = 'Cert:\CurrentUser\My'
     `$MachineCertificate = Get-ChildItem -Path `$certStorePath | Where-Object {`$_.Subject -like `"*`$DeviceID*`"}
-
-
     if(`$MachineCertificate -eq `$null)
     {
         `$certStorePath  = 'Cert:\LocalMachine\My'
         `$MachineCertificate = Get-ChildItem -Path `$certStorePath | Where-Object {`$_.Subject -like `"*`$DeviceID*`"}
     }
-
     if(`$MachineCertificate -eq `$null)
     {
         Throw 'We did not find a certificate, is the device enrolled?'
     }
-
     # Get VPN config and install the tunnel
     `$Response = Invoke-WebRequest -Method 'Post' -Uri 'https://$s' -UseBasicParsing -Certificate `$MachineCertificate -Body @{profile_id = `"$p`";user_id=`"`$DeviceID`"}
     
@@ -45,7 +40,6 @@ if(-not($s) -or -not($p))
             Throw `"Winget not found`"
         }
         cd `$WingetPath
-
         # Install and deploy WireGuard tunnel if we received a wireguard-configuration
         if(`$Response.RawContent.Contains(`"[Interface]`"))
         {
@@ -72,7 +66,7 @@ catch{
 
 echo "$PSScriptRoot\Windows_Intune_management_script.ps1 has been created"
 
-"#!/bin/sh
+"#!/bin/bash
 # Catch errors and log it to /Library/Logs/Microsoft/eduVpnDeployment.log
 set -e
 trap 'catch `$? `$LINENO' EXIT
@@ -83,12 +77,17 @@ catch() {
 }
 # Get the managed device id
 id=`$(security find-certificate -a | awk -F= '/issu/ && /MICROSOFT INTUNE MDM DEVICE CA/ { getline; print `$2 }')
+id=`$(echo `$id | tr -d '`"')
+echo `"`$id`"
+
 # Retrieve config from eduVPN
-response=`$(curl -o - -i -s -X POST `"https://$s`" -d `"profile_id=$p&user_id=`$id`")
+response=`$( CURL_SSL_BACKEND=secure-transport curl -s -i --cert `"`$id`" -d `"profile_id=$p&user_id=`$id`" `"$s`")
+
 http_status=`$(echo `"`$response`" | awk 'NR==1 {print `$2}')
-if [ `$http_status == `"200`" ]; then
+
+if [ `"`$http_status`" == `"200`" ]; then
 	# Install the latest Macports version, which is a package manager for macOS
-	
+
 	version=`$( curl -fs --url 'https://raw.githubusercontent.com/macports/macports-base/master/config/RELEASE_URL' )
 	version=`${version##*/v}
     	curl -L -O --url `"https://github.com/macports/macports-base/releases/download/v`${version}/MacPorts-`${version}.tar.gz`"
@@ -102,18 +101,17 @@ if [ `$http_status == `"200`" ]; then
      	--enable-readline \
 	&& make SELFUPDATING=1 \
 	&& make install SELFUPDATING=1
+	
 	# update MacPorts itself
 	/opt/local/bin/port -dN selfupdate
 	
 	# cleanup
 	cd ..
 	rm  -rf  ./MacPorts-`${version}	
+	
 	# Install and deploy WireGuard tunnel if we received a wireguard-configuration
-	vpnProtocol=`$(echo `"`$response`" | awk -F':' '/Content-Type/ {print `$2}')
-	vpnProtocol=`"`$(echo `"`$vpnProtocol`" | tr -d '[:space:]')`"
-	if [ `"`$vpnProtocol`" == `"application/x-wireguard-profile`" ]; then
+	if [[ `"`$response`" == *`"Interface`"* ]]; then
 		echo `"wireguard`"
-		#su floris -c `"/Users/floris/Downloads/homebrew/bin/brew install wireguard-tools`"
 		if [ ! -e /etc/wireguard ]; then
 			mkdir -m 600 /etc/wireguard/
 		fi
@@ -149,6 +147,7 @@ if [ `$http_status == `"200`" ]; then
                 </dict>
 		</dict>
 		</plist>`" > /Library/LaunchDaemons/wireguard.plist
+		
 		# Change the permissions of the openvpn launch daemon
         	chown root:wheel /Library/LaunchDaemons/wireguard.plist
         	# Load and execute the LaunchDaemon
@@ -183,15 +182,17 @@ if [ `$http_status == `"200`" ]; then
                 <integer>90</integer>
 		</dict>
 		</plist>`" > /Library/LaunchDaemons/openvpn.plist
-	# Change the permissions of the openvpn launch daemon
-	chown root:wheel /Library/LaunchDaemons/openvpn.plist
+		
+		# Change the permissions of the openvpn launch daemon
+		chown root:wheel /Library/LaunchDaemons/openvpn.plist
 	
-	# Load and execute the LaunchDaemon
-	launchctl load /Library/LaunchDaemons/openvpn.plist
+		# Load and execute the LaunchDaemon
+		launchctl load /Library/LaunchDaemons/openvpn.plist
 	fi
 else
 	echo `"we did not receive a HTTP 200 ok from the server`" > /Library/Logs/Microsoft/eduVpnDeployment.log
 	echo `$response > /Library/Logs/Microsoft/eduVpnDeployment.log
-fi" | Out-File -Encoding "UTF8" -FilePath "$PSScriptRoot\macOS_Intune_management_script.sh"
+fi
+" | Out-File -Encoding "UTF8" -FilePath "$PSScriptRoot\macOS_Intune_management_script.sh"
 
-echo "$PSScriptRoot\macOS_management_script.ps1 has been created"
+echo "$PSScriptRoot\macOS_management_script.sh has been created"
