@@ -78,7 +78,6 @@ catch() {
 # Get the managed device id
 id=`$(security find-certificate -a | awk -F= '/issu/ && /MICROSOFT INTUNE MDM DEVICE CA/ { getline; print `$2 }')
 id=`$(echo `$id | tr -d '`"')
-echo `"`$id`"
 
 # Retrieve config from eduVPN
 response=`$( CURL_SSL_BACKEND=secure-transport curl -s -i --cert `"`$id`" -d `"profile_id=$p&user_id=`$id`" `"$s`")
