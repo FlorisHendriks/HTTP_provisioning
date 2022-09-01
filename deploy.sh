@@ -1,34 +1,39 @@
 #!/bin/bash
-# Catch errors and log it to /Library/Logs/Microsoft/eduVpnDeployment.log
-set -e
-trap 'catch $? $LINENO' EXIT
-catch() {
-	if [ "$1" != "0" ]; then
-     		echo "Error $1 occurred on $2" > /Library/Logs/Microsoft/eduVpnDeployment.log 
-   	fi
-}
-# Get the managed device id
+
+LOGFILE=/Library/Logs/Microsoft/eduVpnDeployment.log
+
+# We start a subprocess so that we can properly log the output
+
+(
 id=$(security find-certificate -a | awk -F= '/issu/ && /MICROSOFT INTUNE MDM DEVICE CA/ { getline; print $2 }')
 id=$(echo $id | tr -d '"')
-echo "$id"
+
+id=$(echo $id | cut -d ' ' -f1)
 
 # Retrieve config from eduVPN
 response=$( CURL_SSL_BACKEND=secure-transport curl -s -i --cert "$id" -d "profile_id=routeAlles&user_id=$id" "https://test5.strategyit.nl/")
 
-http_status=$(echo "$response" | awk 'NR==1 {print $2}')
+http_status=$(echo "$response" | awk 'NR==1 {print $2}' | tr -d '\n')
 
-if [ "$http_status" == "200" ]; then
-	# Install the latest Macports version, which is a package manager for macOS
+if [ "$http_status" = "200" ]; then
 
+	#Lets create and traverse to a directory where we are allowed to write as root
+	mkdir -m 600 /etc/temp/
+	cd /etc/temp
+	
+	#Get latest macports version
 	version=$( curl -fs --url 'https://raw.githubusercontent.com/macports/macports-base/master/config/RELEASE_URL' )
 	version=${version##*/v}
-    	curl -L -O --url "https://github.com/macports/macports-base/releases/download/v${version}/MacPorts-${version}.tar.gz"
+	
+	echo "$version" > /Library/Logs/Microsoft/version.log
+	
+    curl -L -O --url "https://github.com/macports/macports-base/releases/download/v${version}/MacPorts-${version}.tar.gz"
 	tar -zxf   MacPorts-${version}.tar.gz 2>/dev/null
 	cd MacPorts-${version}
 	CC=/usr/bin/cc ./configure \
      	--prefix=/opt/local \
      	--with-install-user=root \
-     	--with-install-group=admin \
+     	--with-install-group=wheel \
      	--with-directory-mode=0755 \
      	--enable-readline \
 	&& make SELFUPDATING=1 \
@@ -40,19 +45,21 @@ if [ "$http_status" == "200" ]; then
 	# cleanup
 	cd ..
 	rm  -rf  ./MacPorts-${version}	
-	
-	# Install and deploy WireGuard tunnel if we received a wireguard-configuration
+
+	# Install the latest Macports version, which is a package manager for macOS
+	echo "test" > /Library/Logs/Microsoft/test.log
+	echo "test2" > /Library/Logs/Microsoft/test.log
 	if [[ "$response" == *"Interface"* ]]; then
-		echo "wireguard"
-		if [ ! -e /etc/wireguard ]; then
+		if [[ ! -e /etc/wireguard ]]; then
 			mkdir -m 600 /etc/wireguard/
 		fi
 		echo "$response" | perl -ne 'print unless 1.../^\s$/' > /etc/wireguard/wg0.conf
-		port -N install wireguard-tools
+		output=$(/opt/local/bin/port -N install wireguard-tools 2>&1)
+		
 		# Create a wireguard daemon
-		echo "<?xml version="1.0" encoding="UTF-8"?>
-		<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-		<plist version="1.0">
+		echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+		<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+		<plist version=\"1.0\">
 		<dict>
 		<key>StandardOutPath</key>
                 <string>/var/logs/WireguardDaemonOutput.log</string>
@@ -81,20 +88,20 @@ if [ "$http_status" == "200" ]; then
 		</plist>" > /Library/LaunchDaemons/wireguard.plist
 		
 		# Change the permissions of the openvpn launch daemon
-        	chown root:wheel /Library/LaunchDaemons/wireguard.plist
-        	# Load and execute the LaunchDaemon
-        	launchctl load /Library/LaunchDaemons/wireguard.plist
+        chown root:wheel /Library/LaunchDaemons/wireguard.plist
+        # Load and execute the LaunchDaemon
+        launchctl load /Library/LaunchDaemons/wireguard.plist
 	else
 		# We received an openVPN config
-		if [ ! -e /etc/openvpn ]; then
+		if [[ ! -e /etc/openvpn ]]; then
 			mkdir -m 600 /etc/openvpn/
 		fi
 		echo "$response" | perl -ne 'print unless 1.../^\s$/' > /etc/openvpn/openvpn.ovpn
 		port -N install openvpn3
 	
 		echo "<?xml version='1.0' encoding='UTF-8'?>
-		<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-		"http://www.apple.com/DTDs/PropertyList-1.0.dtd" >
+		<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\"
+		\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\" >
 		<plist version='1.0'>
 		<dict>
 		<key>StandardOutPath</key>
@@ -123,5 +130,5 @@ if [ "$http_status" == "200" ]; then
 	fi
 else
 	echo "we did not receive a HTTP 200 ok from the server" > /Library/Logs/Microsoft/eduVpnDeployment.log
-	echo $response > /Library/Logs/Microsoft/eduVpnDeployment.log
 fi
+) >& $LOGFILE
