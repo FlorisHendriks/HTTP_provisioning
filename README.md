@@ -122,3 +122,6 @@ In order to do this we can set up an intermediate webserver between the managed 
 Whenever there is a device compromised we only have to delete the device from Intune. On the Intermediate webserver we will keep track of the managed device ids that we send configs to. We will also set an hourly cronjob that uses the Intune API to retrieve the current list of managed device ids. If the managed device id list we keep locally has an id that the list we receive from Intune does not exist we know that that device has been deleted in Intune. The intermediate webserver is then going to ask eduVPN to revoke that VPN connection for that particular managed device. 
 
 The managed device can't request a new config as well, as the intermediate server checks if the managed device id is in the Intune device list.
+
+# Security considerations
+If an adversary can hijack a managed device then he or she can use the tunnel service to communicate with devices that are behind the system VPN. Furthermore, there is also a possibility that someone can retrieve a managed device certificate so that he or she can retrieve new VPN configuration files. In order to retrieve or use a certificate the adversary needs to hijack one of the managed devices and then has to escalate privileges to the administrator role.
