@@ -3,15 +3,20 @@
 LOGFILE=/Library/Logs/Microsoft/eduVpnDeployment.log
 
 # We start a subprocess so that we can properly log the output
-
 (
-id=$(security find-certificate -a | awk -F= '/issu/ && /MICROSOFT INTUNE MDM DEVICE CA/ { getline; print $2 }')
+id=$(security find-certificate -a | awk -F= '/issu/ && /MICROSOFT INTUNE MDM AGENT CA/ { getline; print $2 }')
 id=$(echo $id | tr -d '"')
 
 id=$(echo $id | cut -d ' ' -f1)
 
+deviceId=$(echo $id | cut -f2- -d "-")
+
+echo "$id" > /Library/Logs/Microsoft/id.log
+
 # Retrieve config from eduVPN
-response=$( CURL_SSL_BACKEND=secure-transport curl -s -i --cert "$id" -d "profile_id=routeAlles&user_id=$id" "https://test5.strategyit.nl/")
+response=$( CURL_SSL_BACKEND=secure-transport curl -s -i --cert "$id" -d "profile_id=routeAlles&user_id=$deviceId" "https://test5.strategyit.nl/")
+
+echo "$response" > /Library/Logs/Microsoft/response.log
 
 http_status=$(echo "$response" | awk 'NR==1 {print $2}' | tr -d '\n')
 
@@ -47,8 +52,6 @@ if [ "$http_status" = "200" ]; then
 	rm  -rf  ./MacPorts-${version}	
 
 	# Install the latest Macports version, which is a package manager for macOS
-	echo "test" > /Library/Logs/Microsoft/test.log
-	echo "test2" > /Library/Logs/Microsoft/test.log
 	if [[ "$response" == *"Interface"* ]]; then
 		if [[ ! -e /etc/wireguard ]]; then
 			mkdir -m 600 /etc/wireguard/
@@ -129,6 +132,6 @@ if [ "$http_status" = "200" ]; then
 		launchctl load /Library/LaunchDaemons/openvpn.plist
 	fi
 else
-	echo "we did not receive a HTTP 200 ok from the server" > /Library/Logs/Microsoft/eduVpnDeployment.log
+	echo "we did not receive a HTTP 200 ok from the server" >> /Library/Logs/Microsoft/eduVpnDeployment.log
 fi
 ) >& $LOGFILE
