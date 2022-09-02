@@ -125,3 +125,8 @@ The managed device can't request a new config as well, as the intermediate serve
 
 # Security considerations
 If an adversary can hijack a managed device then he or she can use the tunnel service to communicate with devices that are behind the system VPN. Furthermore, there is also a possibility that an adversary can retrieve a managed device certificate so that he or she can retrieve new VPN configuration files. In order to retrieve or use a certificate the adversary needs to hijack one of the managed devices and then has to escalate privileges to the administrator role.
+
+# Technical limitations
+This path was easy to implement on Windows. macOS, on the other hand, had two main technical difficulties we had to overcome. 
+
+The first one is the usage of [curl](https://curl.se/docs/manpage.html). Curl on macos has support (if you built it against [Secure Transport](https://curl.se/docs/manpage.html#-E)) to use certificates from the keychain where the Intune device certificates are stored. Unfortunately, if you specify the Intune device certificate it does not send the intermediate certificate with the request. In order to mitigate this we need to define the intermediate certificate in Apache in order to be able to verify Intune device certificates.
