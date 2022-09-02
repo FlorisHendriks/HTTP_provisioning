@@ -10,7 +10,7 @@ A limitation of this authorization protocol is that the VPN connection can only 
 Moreover, this authorization protocol can be seen as an extra threshold for the user to use the VPN. The user needs to start up the client, connect and log in (if the configuration is expired).
 
 # Finding a solution
-In this document we are going to solve these drawbacks of the current authorization flow by making eduVPN a system VPN that is always on via provisioning. So instead of making the user interact with a eduVPN client to establish a VPN connection we are going to realize that via a daemon. [Initially we solved this by implementing a technical path using Active Directory Certificate Services (ADCS)](https://github.com/FlorisHendriks98/eduVPN-provisioning). This gets the job done but has two significant limitations. Organisations need to implement ADCS and certificate revocation was a bit inelegant. We want to improve this solution by taking another technical path called HTTP provisioning.
+In this document we are going to solve these drawbacks of the current authorization flow by making eduVPN a system VPN that is always on via provisioning. So instead of making the user interact with a eduVPN client to establish a VPN connection we are going to realize that via a daemon. [Initially we solved this by implementing a technical path using Active Directory Certificate Services (ADCS)](https://github.com/FlorisHendriks98/eduVPN-provisioning). This gets the job done but has two significant limitations. Organisations need to implement ADCS and certificate revocation was a bit inelegant. We want to improve this solution by taking another technical path called HTTP provisioning. 
 
 ## High-level protocol of our solution
 Here we describe how we can use WireGuard and OpenVPN client applications to establish a VPN connection that starts on boot.
@@ -28,7 +28,7 @@ e.g.
 It isn't possible to start a WireGuard tunnel on boot with the WireGuard macOS app. It is however possible to do this with wg-quick which can be installed along with the wireguard-tools package. 
 1. Install wireguard-tools which can be installed using either [Homebrew](https://brew.sh/) or [Macports](https://www.macports.org/install.php).
 2. Get VPN configuration file to the device
-3. Put a plist file in /Library/LaunchDaemons/ (which can be found in the Github repository)
+3. Put a plist file in /Library/LaunchDaemons/ (examples can be found in the Github repository)
 4. Run the command: sudo launchctl load \<name_of_plist_file\>.plist
 
 ### OpenVPN for Windows
@@ -53,7 +53,7 @@ process will be instantiated for each configuration file that is found in \confi
 ### OpenVPN for macOS
 1. Install either the [TunnelBlick app](https://tunnelblick.net/downloads.html) or the OpenVPN Homebrew/Macports package.
 2. Get VPN configuration file to the device
-3. Put a plist file in /Library/LaunchDaemons/ (which can be found in the Github repository)
+3. Put a plist file in /Library/LaunchDaemons/ (examples can be found in the Github repository)
 4. Run the command: sudo launchctl load \<name_of_plist_file\>.plist
 
 ## Getting the VPN configuration file to the device
@@ -65,7 +65,7 @@ When it comes down to distributing files to managed devices we mainly have two o
 
 The first option is not [supported by macOS](https://stackoverflow.com/questions/44568362/i-am-looking-for-a-way-to-push-mac-software-from-ad-server-to-connected-mac-clie) without a third party tool.
 
-The second option is supported by macOS but you have to enable SMB manually which can be time consuming. Moreover, SMB has historically shown that it is [not really safe to use](https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=smb), so we would like to refrain from that protocol.
+The second option is supported by macOS but you have to enable SMB manually which can be time consuming. Moreover, SMB has historically shown that it is [not safe to use](https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=smb), so we would like to refrain from that protocol.
 
 In order to properly be able to manage macOS as well, organisations often choose to use the mobile device management service Microsoft Intune. We therefore explored Intune to see if it can help us delegate these VPN configuration files.
 
