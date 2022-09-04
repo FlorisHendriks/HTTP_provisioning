@@ -61,7 +61,7 @@ if(-not($s) -or -not($p))
     }
 }
 catch{
-`$_ | Out-File -FilePath `"$PSScriptRoot\eduVpnDeployment.log`"
+`$_ | Out-File -FilePath `"C:\Windows\Temp\eduVpnDeployment.log`"
 }" | Out-File -Encoding "UTF8" -FilePath "$PSScriptRoot\Windows_Intune_management_script.ps1"
 
 echo "$PSScriptRoot\Windows_Intune_management_script.ps1 has been created"
