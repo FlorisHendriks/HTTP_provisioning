@@ -44,7 +44,7 @@ if(-not($s) -or -not($p))
         if(`$Response.RawContent.Contains(`"[Interface]`"))
         {
             .\winget.exe install --silent WireGuard.WireGuard --accept-package-agreements --accept-source-agreements
-            $Response.Content | Out-File -FilePath `"C:\Program Files\WireGuard\Data\wg0.conf`"
+            `$Response.Content | Out-File -FilePath `"C:\Program Files\WireGuard\Data\wg0.conf`"
             Start-Process -FilePath `"C:\Windows\System32\cmd.exe`" -verb runas -ArgumentList {/c `"`"C:\Program Files\WireGuard\wireguard.exe`" /installtunnelservice `"C:\Program Files\WireGuard\Data\wg0.conf`"`"}
         }
         # else install and deploy OpenVPN
