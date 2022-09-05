@@ -9,7 +9,7 @@ url='https://graph.microsoft.com/v1.0/deviceManagement/managedDevices?$select=id
 response="$(curl -s -X GET "$url" -H "Authorization: Bearer $token" -H 'Content-Type: application/json' -H 'ConsistencyLevel: eventual')"
 managedIds="$(echo "$response" | grep -o '"id":"[^"]*' | grep -o '[^"]*$')"
 
-if [[ ! -f "/etc/localDeviceIds.txt" ]]; then
+if [[ ! -f "/etc/eduVpnProvisioning/localDeviceIds.txt" ]]; then
         echo $managedIds > /etc/eduVpnProvisioning/localDeviceIds.txt
 else
         #revokeIds=localDeviceIds.txt - $managedIds
