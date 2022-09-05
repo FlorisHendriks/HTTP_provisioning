@@ -24,29 +24,29 @@ $reversedString = "";
 // Reverse the first three parts of the oid (this is necessary
 // please refer to the blog post above)
 while($x < 3){
-	$originalString = substr($hex, $offset, $length);
-	$arrayWith2CharsPerElement = str_split($originalString, 2);
-	$arrayWithReversedKeys = array_reverse($arrayWith2CharsPerElement);
-	$newStringInReverseOrder = implode($arrayWithReversedKeys);
+        $originalString = substr($hex, $offset, $length);
+        $arrayWith2CharsPerElement = str_split($originalString, 2);
+        $arrayWithReversedKeys = array_reverse($arrayWith2CharsPerElement);
+        $newStringInReverseOrder = implode($arrayWithReversedKeys);
 
-	$reversedString .= $newStringInReverseOrder;
+        $reversedString .= $newStringInReverseOrder;
 
-	if($length == 8){
-		$length = $length - 4;
-	}
-	if($offset == 0){
-		$offset += 8;
-	}
-	else{
-		$offset += 4;
-	}
-	$x++;
+        if($length == 8){
+                $length = $length - 4;
+        }
+        if($offset == 0){
+                $offset += 8;
+        }
+        else{
+                $offset += 4;
+        }
+        $x++;
 }
 $ClientCertificateTenantId = $reversedString .= substr($hex, 16);
 
 if ($ClientCertificateTenantId != $tenantid){
-	echo 'error, the certificate tenant id is not equal to the tenant id of Intune';
-	exit(0);
+        echo 'error, the certificate tenant id is not equal to the tenant id of Intune';
+        exit(0);
 }
 
 // We now know that the device certificate is part of Intune's correct tenant.
@@ -118,9 +118,9 @@ $boolean = False;
 $managedId = $_SERVER["REMOTE_USER"];
 
 foreach ($flat as $value){
-	if($value == $managedId){
-		$boolean = True;
-	}
+        if($value == $managedId){
+                $boolean = True;
+        }
 }
 if($boolean){
 
