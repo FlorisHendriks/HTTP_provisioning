@@ -136,3 +136,6 @@ The other one is that macOS has implemented access control on the private key of
 ![image](https://user-images.githubusercontent.com/47246332/188156739-d6a65c5c-e24a-4f83-b14c-5a368aa554fb.png)
 
 In order to mitigate this we are going to use a different certificate that Intune puts on the macOS device. This certificate has a private key that every application can use (you still need administrator privileges to access the certificate). The certificate is called IntuneMDMAgent-{managedDeviceId} and is signed by the intermediate certificate Microsoft Intune MDM Agent CA.
+
+# Implementation
+## Prerequisites
