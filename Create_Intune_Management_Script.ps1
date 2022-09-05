@@ -43,14 +43,14 @@ if(-not($s) -or -not($p))
         # Install and deploy WireGuard tunnel if we received a wireguard-configuration
         if(`$Response.RawContent.Contains(`"[Interface]`"))
         {
-            .\winget.exe install --silent WireGuard.WireGuard --accept-package-agreements --accept-source-agreements
+            .\winget.exe install --silent WireGuard.WireGuard --accept-package-agreements --accept-source-agreements | Out-Null
             `$Response.Content | Out-File -FilePath `"C:\Program Files\WireGuard\Data\wg0.conf`"
             Start-Process -FilePath `"C:\Windows\System32\cmd.exe`" -verb runas -ArgumentList {/c `"`"C:\Program Files\WireGuard\wireguard.exe`" /installtunnelservice `"C:\Program Files\WireGuard\Data\wg0.conf`"`"}
         }
         # else install and deploy OpenVPN
         else
         {
-            .\winget.exe install OpenVPNTechnologies.OpenVPN --silent --accept-package-agreements --accept-source-agreements --override `"ADDLOCAL=OpenVPN.Service,OpenVPN,Drivers.TAPWindows6,Drivers`"
+            .\winget.exe install OpenVPNTechnologies.OpenVPN --silent --accept-package-agreements --accept-source-agreements --override `"ADDLOCAL=OpenVPN.Service,OpenVPN,Drivers.TAPWindows6,Drivers`" | Out-Null
             `$Response.Content | Out-File -Encoding `"UTF8`" -FilePath `"C:\Program Files\OpenVPN\config-auto\openvpn.ovpn`"
             Restart-Service -Name OpenVPNService
         }
