@@ -51,9 +51,8 @@ if(-not($s) -or -not($p))
         else
         {
             .\winget.exe install OpenVPNTechnologies.OpenVPN --silent --accept-package-agreements --accept-source-agreements --override `"ADDLOCAL=OpenVPN.Service,OpenVPN,Drivers.TAPWindows6,Drivers`"
-            Start-Process msiexec.exe -ArgumentList '/q', '/n', '/I', 'OpenVPN.msi', 'ADDLOCAL=OpenVPN.Service,OpenVPN,Drivers.TAPWindows6,Drivers' -Wait -NoNewWindow -PassThru | Out-Null
             `$Response.Content | Out-File -Encoding `"UTF8`" -FilePath `"C:\Program Files\OpenVPN\config-auto\openvpn.ovpn`"
-	    Restart-Service -Name OpenVPNService
+            Restart-Service -Name OpenVPNService
         }
     }
     else
