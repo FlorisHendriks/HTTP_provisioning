@@ -192,7 +192,6 @@ if [ `"`$http_status`" = `"200`" ]; then
 		<key>ProgramArguments</key>
 		<array>
 			<string>/opt/local/bin/ovpncli</string>
-			<string>--config</string>
 			<string>/etc/openvpn/openvpn.ovpn</string>
 		</array>
 		<key>KeepAlive</key><false/>
