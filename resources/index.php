@@ -117,6 +117,11 @@ $boolean = False;
 
 $managedId = $_SERVER["REMOTE_USER"];
 
+$num = substr_count($managedId, '-');
+if($num == 5){
+        $managedId = substr(strstr($managedId, '-'), 1);
+}
+
 foreach ($flat as $value){
         if($value == $managedId){
                 $boolean = True;
