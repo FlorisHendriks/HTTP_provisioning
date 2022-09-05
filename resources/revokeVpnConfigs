@@ -29,7 +29,7 @@ else
         # Revoke the VPN configs from unenrolled Intune devices
         for id in $revokeIds
         do
-                curl -i -s -d "user_id=$id" -H "Authorization: Bearer {adminApiToken}" "https://vpn.example/vpn-user-portal/admin/api/v1/destroy"
+                response=$(curl -i -s -d "user_id=$id" -H "Authorization: Bearer {adminApiToken}" "https://vpn.example/vpn-user-portal/admin/api/v1/destroy")
                 http_status=$(echo "$response" | awk 'NR==1 {print $2}' | tr -d '\n')
                 if [ "$http_status" = "204" ]; then
                         localDeviceIds=( "${localDeviceIds[@]/$id}" )
