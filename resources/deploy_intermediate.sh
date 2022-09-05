@@ -79,6 +79,6 @@ cp ./revokeVpnConfigs "/etc/eduVpnProvisioning/revokeVpnConfigs"
 sed -i "s/{applicationId}/${APPLICATION_ID}/" "/etc/eduVpnProvisioning/revokeVpnConfigs"
 sed -i "s/{secretToken}/${SECRET_TOKEN}/" "/etc/eduVpnProvisioning/revokeVpnConfigs"
 sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/etc/eduVpnProvisioning/revokeVpnConfigs"
-sed -i "s/vpn.example/${VPN_FQDN}/" "/var/www/${VPN_FQDN}/index.php"
+sed -i "s/vpn.example/${VPN_FQDN}/" "/etc/eduVpnProvisioning/revokeVpnConfigs"
 
 cp ./eduVpnProvisioning /etc/cron.d/eduVpnProvisioning
