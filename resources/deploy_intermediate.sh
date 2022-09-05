@@ -1,11 +1,8 @@
 #!/bin/sh
 
 #
-# Deploy an intermediate webserver
+# Deploy an intermediate webserver and set up automatic VPN revocation
 #
-
-# This code is partially based on Francois Kooman's code which can be
-# found here: https://github.com/eduvpn/documentation/blob/v3/deploy_debian.sh
 
 if ! [ "root" = "$(id -u -n)" ]; then
     echo "ERROR: ${0} must be run as root!"; exit 1
@@ -29,12 +26,12 @@ WEB_FQDN=$(echo "${WEB_FQDN}" | tr '[:upper:]' '[:lower:]')
 # APACHE
 ###############################################################################
 
-cp /resources/intermediate.example.conf "/etc/apache2/sites-available/${INTERMEDIATE_FQDN}.conf"
+cp ./intermediate.example.conf "/etc/apache2/sites-available/${INTERMEDIATE_FQDN}.conf"
 
-cp /resources/MicrosoftIntuneRootCertificate.cer "/etc/ssl/certs/MicrosoftIntuneRootCertificate.cer"
+cp ./MicrosoftIntuneRootCertificate.cer "/etc/ssl/certs/MicrosoftIntuneRootCertificate.cer"
 
 mkdir -p "/var/www/${INTERMEDIATE_FQDN}/"
-cp /resources/index.php "/var/www/${INTERMEDIATE_FQDN}/"
+cp ./index.php "/var/www/${INTERMEDIATE_FQDN}/"
 
 # update hostname
 sed -i "s/vpn.example/${INTERMEDIATE_FQDN}/" "/etc/apache2/sites-available/${INTERMEDIATE_FQDN}.conf"
@@ -72,3 +69,15 @@ sed -i "s|#SSLCertificateKeyFile /etc/letsencrypt/live/${INTERMEDIATE_FQDN}/priv
 sed -i "s|#SSLCertificateChainFile /etc/letsencrypt/live/${INTERMEDIATE_FQDN}/chain.pem|SSLCertificateChainFile /etc/letsencrypt/live/${INTERMEDIATE_FQDN}/chain.pem|" "/etc/apache2/sites-available/${INTERMEDIATE_FQDN}.conf"
 
 systemctl restart apache2
+
+###############################################################################
+# CRON
+###############################################################################
+mkdir -m 600 /etc/eduVpnProvisioning
+cp ./revokeVpnConfigs "/etc/eduVpnProvisioning/revokeVpnConfigs"
+
+sed -i "s/{applicationId}/${APPLICATION_ID}/" "/etc/eduVpnProvisioning/revokeVpnConfigs"
+sed -i "s/{secretToken}/${SECRET_TOKEN}/" "/etc/eduVpnProvisioning/revokeVpnConfigs"
+sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/etc/eduVpnProvisioning/revokeVpnConfigs"
+
+cp ./eduVpnProvisioning /etc/cron.d/eduVpnProvisioning
