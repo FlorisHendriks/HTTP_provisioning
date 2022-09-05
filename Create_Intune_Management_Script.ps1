@@ -44,14 +44,24 @@ if(-not($s) -or -not($p))
         if(`$Response.RawContent.Contains(`"[Interface]`"))
         {
             .\winget.exe install --silent WireGuard.WireGuard --accept-package-agreements --accept-source-agreements | Out-Null
-            `$Response.Content | Out-File -FilePath `"C:\Program Files\WireGuard\Data\wg0.conf`"
-            Start-Process -FilePath `"C:\Windows\System32\cmd.exe`" -verb runas -ArgumentList {/c `"`"C:\Program Files\WireGuard\wireguard.exe`" /installtunnelservice `"C:\Program Files\WireGuard\Data\wg0.conf`"`"}
+	    
+	    # We create a new folder in the WireGuard directory. 
+            # We cant put it in WireGuard\Data directory as that folder is created only when we start the WireGuard application
+	    # (https://www.reddit.com/r/WireGuard/comments/x6f1gl/missing_data_directory_when_installing_wireguard/)
+	    New-Item -Path `"C:\Program Files\WireGuard\`" -Name `"eduVpnProvisioning`" -ItemType `"directory`"
+	    
+	    # Limit access to the System user and administrators.
+	    icacls `"C:\Program Files\WireGuard\eduVpnProvisioning`" /inheritance:r /grant:r `"SYSTEM:(OI)(CI)F`" /grant:r `"Administrators:(OI)(CI)F`"
+	    
+            `$Response.Content | Out-File -FilePath `"C:\Program Files\WireGuard\eduVpnProvisioning\wg0.conf`"
+            Start-Process -FilePath `"C:\Windows\System32\cmd.exe`" -verb runas -ArgumentList {/c `"`"C:\Program Files\WireGuard\wireguard.exe`" /installtunnelservice `"C:\Program Files\WireGuard\eduVpnProvisioning\wg0.conf`"`"}
         }
         # else install and deploy OpenVPN
         else
         {
             .\winget.exe install OpenVPNTechnologies.OpenVPN --silent --accept-package-agreements --accept-source-agreements --override `"ADDLOCAL=OpenVPN.Service,OpenVPN,Drivers.TAPWindows6,Drivers`" | Out-Null
-            `$Response.Content | Out-File -Encoding `"UTF8`" -FilePath `"C:\Program Files\OpenVPN\config-auto\openvpn.ovpn`"
+            icacls `"C:\Program Files\OpenVPN\config-auto`" /inheritance:r /grant:r `"SYSTEM:(OI)(CI)F`" /grant:r `"Administrators:(OI)(CI)F`"
+	    `$Response.Content | Out-File -Encoding `"UTF8`" -FilePath `"C:\Program Files\OpenVPN\config-auto\openvpn.ovpn`"
             Restart-Service -Name OpenVPNService
         }
     }
