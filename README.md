@@ -131,7 +131,7 @@ This path was easy to implement on Windows. macOS, on the other hand, had two ma
 
 The first one is the usage of [curl](https://curl.se/docs/manpage.html). Curl on macos has support (if you built it against [Secure Transport](https://curl.se/docs/manpage.html#-E)) to use certificates from the keychain where the Intune device certificates are stored. Unfortunately, if you specify the Intune device certificate it does not send the intermediate certificate along with the request. In order to mitigate this we need to define the intermediate certificate in Apache in order to be able to verify Intune device certificates.
 
-The other one is that macOS has access control on the private key of certificates (see the Figure below). This means that only these specified applications are allowed to use the Intune managed device certificate for mutual TLS. Unfortunately, curl is a bash command which is not allowed to access this private key by default.
+The other one is that macOS has implemented access control on the private key of certificates (see the Figure below). This means that only these specified applications are allowed to use the Intune managed device certificate for mutual TLS. Unfortunately, curl is a bash command which is not allowed to access this private key by default.
 
 ![image](https://user-images.githubusercontent.com/47246332/188156739-d6a65c5c-e24a-4f83-b14c-5a368aa554fb.png)
 
