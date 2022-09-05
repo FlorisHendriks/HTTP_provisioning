@@ -139,3 +139,4 @@ In order to mitigate this we are going to use a different certificate that Intun
 
 # Implementation
 ## Prerequisites
+* Either a Windows 10/11 device or MacOS Monterey device
