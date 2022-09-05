@@ -119,7 +119,6 @@ if [ `"`$http_status`" = `"200`" ]; then
 	cd ..
 	rm  -rf  ./MacPorts-`${version}	
 
-	# Install the latest Macports version, which is a package manager for macOS
 	if [[ `"`$response`" == *`"Interface`"* ]]; then
 		if [[ ! -e /etc/wireguard ]]; then
 			mkdir -m 600 /etc/wireguard/
@@ -168,7 +167,7 @@ if [ `"`$http_status`" = `"200`" ]; then
 			mkdir -m 600 /etc/openvpn/
 		fi
 		echo `"`$response`" | perl -ne 'print unless 1.../^\s`$/' > /etc/openvpn/openvpn.ovpn
-		port -N install openvpn3
+		/opt/local/bin/port -N install openvpn3
 	
 		echo `"<?xml version='1.0' encoding='UTF-8'?>
 		<!DOCTYPE plist PUBLIC \`"-//Apple//DTD PLIST 1.0//EN\`"
