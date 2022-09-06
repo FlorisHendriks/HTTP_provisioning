@@ -179,16 +179,14 @@ Place and configure the Windows_Intune_management_script.ps1 and macOS_managemen
 
 ![image](https://user-images.githubusercontent.com/47246332/188602159-d199b46b-71ac-4fb4-943f-cfac12ed29b9.png)
 
-If all goes well the scripts are pushed to the devices and will deploy the system VPN.
+The scripts are pushed to the devices and will deploy the system VPN.
 
 ## Troubleshooting
 If some things do not go as planned you can check the logs files.
-on the 
-
-* Windows client it is stored at "C:\Windows\Temp\eduVpnDeployment.log". 
-* macOS client it is stored at "\Library\Logs\Microsoft\eduVpnDeployment.log" 
+* On the Windows client it is stored at "C:\Windows\Temp\eduVpnDeployment.log". 
+* on the macOS client it is stored at "\Library\Logs\Microsoft\eduVpnDeployment.log" 
 
 # Future Work
 * Lots and lots of testing, finding edge cases and debug potential issues.
 * Improve the code and let it run more efficiently
-* Extend support for eduVPN fedora servers
+* Extend support for eduVPN Fedora servers
