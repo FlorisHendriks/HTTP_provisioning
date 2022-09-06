@@ -74,7 +74,7 @@ systemctl restart apache2
 # CRON
 ###############################################################################
 mkdir -m 600 /etc/eduVpnProvisioning
-cp ./revokeVpnConfigs "/etc/eduVpnProvisioning/revokeVpnConfigs"
+cp -p ./revokeVpnConfigs "/etc/eduVpnProvisioning/revokeVpnConfigs"
 touch /etc/eduVpnProvisioning/localDeviceIds.txt
 chmod 666 /etc/eduVpnProvisioning/localDeviceIds.txt
 
@@ -82,5 +82,6 @@ sed -i "s/{applicationId}/${APPLICATION_ID}/" "/etc/eduVpnProvisioning/revokeVpn
 sed -i "s/{secretToken}/${SECRET_TOKEN}/" "/etc/eduVpnProvisioning/revokeVpnConfigs"
 sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/etc/eduVpnProvisioning/revokeVpnConfigs"
 sed -i "s/vpn.example/${VPN_FQDN}/" "/etc/eduVpnProvisioning/revokeVpnConfigs"
+sed -i "s/{tenantId}/${TENANT_ID}/" "/etc/eduVpnProvisioning/revokeVpnConfigs"
 
 cp ./eduVpnProvisioning /etc/cron.d/eduVpnProvisioning
