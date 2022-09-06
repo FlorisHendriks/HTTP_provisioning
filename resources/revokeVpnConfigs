@@ -9,13 +9,13 @@ url='https://graph.microsoft.com/v1.0/deviceManagement/managedDevices?$select=id
 response="$(curl -s -X GET "$url" -H "Authorization: Bearer $token" -H 'Content-Type: application/json' -H 'ConsistencyLevel: eventual')"
 managedIds="$(echo "$response" | grep -o '"id":"[^"]*' | grep -o '[^"]*$')"
 
-if [[ ! -f "/etc/eduVpnProvisioning/localDeviceIds.txt" ]]; then
-        echo $managedIds > /etc/eduVpnProvisioning/localDeviceIds.txt
-else
+#if [[ ! -f "/etc/eduVpnProvisioning/localDeviceIds.txt" ]]; then
+#        echo $managedIds > /etc/eduVpnProvisioning/localDeviceIds.txt
+#else
         #revokeIds=localDeviceIds.txt - $managedIds
         localDeviceIds=$(cat "/etc/eduVpnProvisioning/localDeviceIds.txt")
 
-        # Convert string to array, using space as delimiter for the elements
+        # Convert string to array, using newline as delimiter for the elements
         localDeviceIds=($localDeviceIds)
 
         managedIds=($managedIds)
@@ -23,7 +23,7 @@ else
         # Check the difference between the arrays
         revokeIds=( $(printf "%s\n" "${localDeviceIds[@]}" "${managedIds[@]}" "${managedIds[@]}" | sort | uniq -u) )
 
-        addIds=( $(printf "%s\n" "${managedIds[@]}" "${localDeviceIds[@]}" "${localDeviceIds[@]}" | sort | uniq -u) )
+#       addIds=( $(printf "%s\n" "${managedIds[@]}" "${localDeviceIds[@]}" "${localDeviceIds[@]}" | sort | uniq -u) )
 
         echo "revoking: " . $revokeIds
         # Revoke the VPN configs from unenrolled Intune devices
@@ -36,7 +36,7 @@ else
                 fi
         done
 
-localDeviceIds=( "${localDeviceIds[@]}" "${addIds[@]}" )
-echo ${localDeviceIds[*]// /|} > /etc/eduVpnProvisioning/localDeviceIds.txt
+#localDeviceIds=( "${localDeviceIds[@]}" "${addIds[@]}" )
+#echo ${localDeviceIds[*]// /|} > /etc/eduVpnProvisioning/localDeviceIds.txt
 
-fi
+#fi
