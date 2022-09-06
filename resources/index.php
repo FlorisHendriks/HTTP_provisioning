@@ -145,7 +145,7 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
 $config = curl_exec($ch);
 
-$file = "/etc/eduVpnProvisioning/localDeviceIds.txt"
+$file = "/etc/eduVpnProvisioning/localDeviceIds.txt";
 if (! strpos(file_get_contents("$file"), "$managedId")) {
         file_put_contents($file, "$managedId" . "\n", FILE_APPEND);
 }
