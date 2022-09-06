@@ -143,4 +143,27 @@ In order to mitigate this we are going to use a different certificate that Intun
 * [Debian v3 eduVPN server with the admin API enabled](https://github.com/eduvpn/documentation/blob/v3/ADMIN_API.md) 
 * [Git installed](https://git-scm.com/download/win)
 * Access to a Microsoft Endpoint Manager (Intune) tenant.
+* Working DNS entry for your intermediate webserver, e.g. intermediate.example.org.
 
+## Step 1
+We first need to register an application in Azure. This will allow us to do API calls to Intune.
+
+* Navigate to portal.azure.com
+
+
+## Step 2
+
+
+Perform these steps on the server which hosts eduVPN:
+
+
+    $ git clone https://github.com/FlorisHendriks98/HTTP_provisioning.git
+    $ cd HTTP_provisioning/resources/
+    $ sudo ./deploy_intermediate.sh
+    $ cd documentation-3
+
+
+# Future Work
+* Lots and lots of testing, finding edge cases and debug potential issues.
+* Improve the code and let it run more efficiently
+* Extend support for eduVPN fedora servers
