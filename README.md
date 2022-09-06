@@ -186,7 +186,7 @@ If some things do not go as planned you can check the logs files.
 on the 
 
 * Windows client it is stored at "C:\Windows\Temp\eduVpnDeployment.log". 
-* macOS client it is stored at \Library\Logs\Microsoft\eduVpnDeployment.log" 
+* macOS client it is stored at "\Library\Logs\Microsoft\eduVpnDeployment.log" 
 
 # Future Work
 * Lots and lots of testing, finding edge cases and debug potential issues.
