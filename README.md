@@ -59,7 +59,7 @@ process will be instantiated for each configuration file that is found in \confi
 ## Getting the VPN configuration file to the device
 Step 2 of the high-level protocol is the most difficult part. We need to get the VPN configuration file to the device.
 
-When it comes down to distributing files to managed devices we mainly have two options:
+[When it comes down to distributing files to managed devices we mainly have two options](https://www.reddit.com/r/WireGuard/comments/p9deno/wireguard_windows_gpo_deployment_possible/):
 1. Distribute the config files via GPO
 2. Use a file copy command (e.g. Robocopy) to the managed devices via SMB.
 
