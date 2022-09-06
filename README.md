@@ -148,11 +148,12 @@ In order to mitigate this we are going to use a different certificate that Intun
 ## Step 1
 We first need to register an application in Azure. This will allow us to do API calls to Intune.
 
-* Navigate to portal.azure.com
+* [Register an app in Azure](https://docs.microsoft.com/en-us/power-apps/developer/data-platform/walkthrough-register-app-azure-active-directory)
+* Go to API permissions and add the permissions "DeviceManagementManagedDevices.Read.All" and "DeviceManagementManagedDevices.ReadWrite.All"
+* Go to Certificates & secrets and create a new client secret, temporarily save this value somewhere.
 
 
 ## Step 2
-
 
 Perform these steps on the server which hosts eduVPN:
 
