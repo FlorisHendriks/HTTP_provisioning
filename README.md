@@ -59,7 +59,7 @@ process will be instantiated for each configuration file that is found in \confi
 ## Getting the VPN configuration file to the device
 Step 2 of the high-level protocol is the most difficult part. We need to get the VPN configuration file to the device.
 
-When it comes down to distributing files to managed devices we mainly have two options:
+[When it comes down to distributing files to managed devices we mainly have two options](https://www.reddit.com/r/WireGuard/comments/p9deno/wireguard_windows_gpo_deployment_possible/):
 1. Distribute the config files via GPO
 2. Use a file copy command (e.g. Robocopy) to the managed devices via SMB.
 
@@ -141,6 +141,52 @@ In order to mitigate this we are going to use a different certificate that Intun
 ## Prerequisites
 * Either a Windows 10/11 device or MacOS Monterey device
 * [Debian v3 eduVPN server with the admin API enabled](https://github.com/eduvpn/documentation/blob/v3/ADMIN_API.md) 
+* [Have the eduVPN admin API token](https://github.com/eduvpn/documentation/blob/v3/ADMIN_API.md) 
 * [Git installed](https://git-scm.com/download/win)
 * Access to a Microsoft Endpoint Manager (Intune) tenant.
+* Working DNS entry for your intermediate webserver, e.g. intermediate.example.org.
 
+## Step 1
+We first need to register an application in Azure. This will allow us to do API calls to Intune.
+
+* [Register an app in Azure](https://docs.microsoft.com/en-us/power-apps/developer/data-platform/walkthrough-register-app-azure-active-directory)
+* Go to API permissions and add the permissions "DeviceManagementManagedDevices.Read.All" and "DeviceManagementManagedDevices.ReadWrite.All"
+* Go to Certificates & secrets and create a new client secret, temporarily save this value somewhere.
+
+## Step 2
+Perform these steps on the server which hosts eduVPN:
+
+
+    $ git clone https://github.com/FlorisHendriks98/HTTP_provisioning.git
+    $ cd HTTP_provisioning/resources/
+    $ sudo ./deploy_intermediate.sh
+
+The script will ask to enter some values in order to set everything up properly.
+
+## Step 3
+Open up a powershell on a device
+  
+    > git clone https://github.com/FlorisHendriks98/HTTP_provisioning.git
+    > cd HTTP_provisioning
+    > .\Create_Intune_Management_Script.ps1 -p "profile" -s "intermediate.example.org"
+
+The arguments -p you must specify the VPN profile you want to use as system VPN and -s you must specify the hostname of the VPN server.
+
+.\Create_Intune_Management_Script.ps1 creates two scripts. The .ps1 script is for Windows and the .sh script is for macOS. The scripts are put in the same directory as .\Create_Intune_Management_Script.ps1.
+
+## Step 4
+Place and configure the Windows_Intune_management_script.ps1 and macOS_management_script.sh in Intune. Make sure that you configure the Windows PowerShell script to run in a 64 bit PowerShell host (see Figure below).
+
+![image](https://user-images.githubusercontent.com/47246332/188602159-d199b46b-71ac-4fb4-943f-cfac12ed29b9.png)
+
+The scripts are pushed to the devices and will deploy the system VPN.
+
+## Troubleshooting
+If some things do not go as planned you can check the logs files.
+* On the Windows client it is stored at "C:\Windows\Temp\eduVpnDeployment.log". 
+* on the macOS client it is stored at "\Library\Logs\Microsoft\eduVpnDeployment.log" 
+
+# Future Work
+* Lots and lots of testing, finding edge cases and debug potential issues.
+* Improve the code and let it run more efficiently
+* Extend support for eduVPN Fedora servers
