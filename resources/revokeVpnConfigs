@@ -6,7 +6,14 @@ token="$(echo "$tokenResponse" | grep -o '"access_token":"[^"]*' | grep -o '[^"]
 
 # Receive the managed device ids of the Intune tenant
 url='https://graph.microsoft.com/v1.0/deviceManagement/managedDevices?$select=id'
-response="$(curl -s -X GET "$url" -H "Authorization: Bearer $token" -H 'Content-Type: application/json' -H 'ConsistencyLevel: eventual')"
+response="$(curl -i -s -X GET "$url" -H "Authorization: Bearer $token" -H 'Content-Type: application/json' -H 'ConsistencyLevel: eventual')"
+
+http_status=$(echo "$response" | awk 'NR==1 {print $2}' | tr -d '\n')
+
+if [ "$http_status" != "200" ]; then
+        printf "We did not receive a HTTP 200 ok response from Intune \n%s" "$response" >> /etc/eduVpnProvisioning/revocation.log
+        exit 1
+fi
 managedIds="$(echo "$response" | grep -o '"id":"[^"]*' | grep -o '[^"]*$')"
 
 # Retrieve our locally stored managed device ids
@@ -27,5 +34,8 @@ do
         http_status=$(echo "$response" | awk 'NR==1 {print $2}' | tr -d '\n')
         if [ "$http_status" = "204" ]; then
                 localDeviceIds=( "${localDeviceIds[@]/$id}" )
+        else
+                printf "We did not receive a HTTP 204 ok response from eduVPN server \n%s" "$response" >> /etc/eduVpnProvisioning/revocation.log
+
         fi
 done
