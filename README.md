@@ -169,7 +169,7 @@ Open up a powershell on a device
     > cd HTTP_provisioning
     > .\Create_Intune_Management_Script.ps1 -p "profile" -s "intermediate.example.org"
 
-The arguments -p you must specify the VPN profile you want to use as system VPN and -s you must specify the hostname of the VPN server.
+The arguments -p you must specify the VPN profile you want to use as system VPN and -s you must specify the hostname of the intermediate server.
 
 .\Create_Intune_Management_Script.ps1 creates two scripts. The .ps1 script is for Windows and the .sh script is for macOS. The scripts are put in the same directory as .\Create_Intune_Management_Script.ps1.
 
