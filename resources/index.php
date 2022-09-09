@@ -45,8 +45,9 @@ while($x < 3){
 $ClientCertificateTenantId = $reversedString .= substr($hex, 16);
 
 if ($ClientCertificateTenantId != $tenantid){
+	http_response_code(403);
         echo 'error, the certificate tenant id is not equal to the tenant id of Intune';
-        exit(0);
+        exit(1);
 }
 
 // We now know that the device certificate is part of Intune's correct tenant.
@@ -69,7 +70,9 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
 $result = curl_exec($ch);
 if (curl_errno($ch)) {
-    echo 'Error:' . curl_error($ch);
+	http_response_code(502);
+    	echo 'Error:' . curl_error($ch);
+	exit(1);
 }
 curl_close($ch);
 
@@ -100,7 +103,9 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
 $result = curl_exec($ch);
 if (curl_errno($ch)) {
-    echo 'Error:' . curl_error($ch);
+	http_response_code(502);
+	echo 'Error:' . curl_error($ch);
+	exit(1);
 }
 curl_close($ch);
 
@@ -113,7 +118,7 @@ $managedDeviceIds = $jsonObject["value"];
 
 $flat = array_column($managedDeviceIds, 'id');
 
-$boolean = False;
+$boolean = True;
 
 $managedId = $_SERVER["REMOTE_USER"];
 
@@ -124,10 +129,15 @@ if($num == 5){
 
 foreach ($flat as $value){
         if($value == $managedId){
-                $boolean = True;
+                $boolean = False;
         }
 }
 if($boolean){
+	http_response_code(403);
+        echo 'error, the managed device id was not found in the Intune tenant';
+        exit(1);
+}
+
 
 //Send an admin-api create request to eduVPN.
 //eduVPN replies with a config which we will forward to the managed device.
@@ -150,12 +160,12 @@ if (strpos(file_get_contents($file), $managedId) === false) {
         file_put_contents($file, $managedId . "\n", FILE_APPEND);
 }
 
-echo $config;
 
 if (curl_errno($ch)) {
-    echo 'Error:' . curl_error($ch);
+	http_response_code(502);
+        echo 'Error:' . curl_error($ch);
+        exit(1);
 }
 curl_close($ch);
-
-}
+echo $config;
 ?>
