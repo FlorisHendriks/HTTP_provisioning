@@ -1,7 +1,7 @@
 #!/bin/bash
 # Get the Intune token so that we are allowed to do api calls
-postParams='client_id=e4ca3cca-52c1-4832-ae54-5c4d218f2f89&scope=https://graph.microsoft.com/.default&client_secret=Lki8Q~42i3W4aNoNSIULQaxzy~xkrFmwtMAfcbGG&grant_type=client_credentials'
-tokenResponse="$(curl -s -X POST 'https://login.microsoftonline.com/37df9480-90d6-4451-b361-e191433a3c2c/oauth2/v2.0/token' -X POST -d "$postParams")"
+postParams='client_id={applicationId}&scope=https://graph.microsoft.com/.default&client_secret={secretToken}&grant_type=client_credentials'
+tokenResponse="$(curl -s -X POST 'https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token' -X POST -d "$postParams")"
 token="$(echo "$tokenResponse" | grep -o '"access_token":"[^"]*' | grep -o '[^"]*$')"
 
 # Receive the managed device ids of the Intune tenant
@@ -30,12 +30,12 @@ revokeIds=( $(printf "%s\n" "${localDeviceIds[@]}" "${managedIds[@]}" "${managed
 # Revoke the VPN configs from unenrolled Intune devices
 for id in $revokeIds
 do
-        response=$(curl -i -s -d "user_id=$id" -H "Authorization: Bearer 66713fd6ac951092187af953c3dbc7b6a6c539ee8ad8ca7bbef4a3d07f37b07a" "https://vpn.strategyit.nl/vpn-user-portal/admin/api/v1/destroy")
+        response=$(curl -i -s -d "user_id=$id" -H "Authorization: Bearer {adminApiToken}" "https://vpn.strategyit.nl/vpn-user-portal/admin/api/v1/destroy")
         http_status=$(echo "$response" | awk 'NR==1 {print $2}' | tr -d '\n')
         if [ "$http_status" = "204" ]; then
                 localDeviceIds=( "${localDeviceIds[@]/$id}" )
         else
-                printf "We did not receive a HTTP 204 ok response from eduVPN server \n%s" "$response" >> /etc/eduVpnProvisioning/revocation.log
+                printf "We did not receive a HTTP 204 (no content) response from the eduVPN server \n%s" "$response" >> /etc/eduVpnProvisioning/revocation.log
 
         fi
 done
