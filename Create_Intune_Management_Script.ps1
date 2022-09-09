@@ -23,8 +23,16 @@ if(-not($s) -or -not($p))
         Throw 'We did not find a certificate, is the device enrolled?'
     }
     # Get VPN config and install the tunnel
+    try{
     `$Response = Invoke-WebRequest -Method 'Post' -Uri 'https://$s' -UseBasicParsing -Certificate `$MachineCertificate -Body @{profile_id = `"$p`";user_id=`"`$DeviceID`"}
-    
+    }
+    catch{
+            `$respStream = `$_.Exception.Response.GetResponseStream()
+            `$reader = New-Object System.IO.StreamReader(`$respStream)
+            `$reader.BaseStream.Position = 0
+	    `$responseBody = $reader.ReadToEnd()
+	    throw `"$_.Exception ``r``n`$responseBody`"
+	}
     if(`$Response.StatusCode -eq 200)
     {
     
