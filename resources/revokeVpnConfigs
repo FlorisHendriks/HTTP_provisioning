@@ -34,6 +34,7 @@ do
         http_status=$(echo "$response" | awk 'NR==1 {print $2}' | tr -d '\n')
         if [ "$http_status" = "204" ]; then
                 localDeviceIds=( "${localDeviceIds[@]/$id}" )
+		printf "Device %s\n" "$id has been revoked" >> /etc/eduVpnProvisioning/revocation.log
         else
                 printf "We did not receive a HTTP 204 (no content) response from the eduVPN server \n%s" "$response" >> /etc/eduVpnProvisioning/revocation.log
 
