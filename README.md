@@ -180,6 +180,10 @@ Place and configure the Windows_Intune_management_script.ps1 and macOS_managemen
 
 The scripts are pushed to the devices and will deploy the system VPN.
 
+# Tutorial
+
+https://user-images.githubusercontent.com/47246332/189675495-105cdfa0-3b7a-4c7a-bf53-f768b670d011.mp4
+
 ## Troubleshooting
 If some things do not go as planned you can check the logs files.
 * On the Windows client it is stored at "C:\Windows\Temp\eduVpnDeployment.log". 
