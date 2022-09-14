@@ -185,7 +185,7 @@ The scripts are pushed to the devices and will deploy the system VPN.
 https://user-images.githubusercontent.com/47246332/189675495-105cdfa0-3b7a-4c7a-bf53-f768b670d011.mp4
 
 ## Troubleshooting
-If some things do not go as planned you can check the logs files.
+If some things do not go as planned you can check the log files.
 * On the Windows client it is stored at "C:\Windows\Temp\eduVpnDeployment.log". 
 * On the macOS client it is stored at "\Library\Logs\Microsoft\eduVpnDeployment.log" 
 * Revocation logs can be found at "/etc/eduVpnProvisioning/revokeVpnConfigs"
