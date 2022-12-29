@@ -1,1 +1,1 @@
-*/5 * * * * root /etc/eduVpnProvisioning/revokeVpnConfigs
+*/5 * * * * root /usr/libexec/vpn-provisioning/revokeVpnConfigs

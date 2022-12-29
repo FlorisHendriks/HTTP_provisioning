@@ -28,29 +28,30 @@ WEB_FQDN=$(echo "${WEB_FQDN}" | tr '[:upper:]' '[:lower:]')
 
 cp ./intermediate.example.conf "/etc/apache2/sites-available/${INTERMEDIATE_FQDN}.conf"
 
-cp ./MicrosoftIntuneRootCertificate.cer "/etc/ssl/certs/MicrosoftIntuneRootCertificate.cer"
+mkdir -p "/usr/share/vpn-provisioning/certs"
+cp ./MicrosoftIntuneRootCertificate.cer "/usr/share/vpn-provisioning/certs/MicrosoftIntuneRootCertificate.cer"
 
-mkdir -p "/var/www/${INTERMEDIATE_FQDN}/"
-cp ./index.php "/var/www/${INTERMEDIATE_FQDN}/"
+mkdir -p "/usr/share/vpn-provisioning/web"
+cp ./index.php "/usr/share/vpn-provisioning/web"
 
 # update hostname
 sed -i "s/vpn.example/${INTERMEDIATE_FQDN}/" "/etc/apache2/sites-available/${INTERMEDIATE_FQDN}.conf"
-sed -i "s/vpn.example/${INTERMEDIATE_FQDN}/" "/var/www/${INTERMEDIATE_FQDN}/index.php"
+sed -i "s/vpn.example/${INTERMEDIATE_FQDN}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update vpn name
-sed -i "s/{vpnDNS}/${VPN_FQDN}/" "/var/www/${INTERMEDIATE_FQDN}/index.php"
+sed -i "s/{vpnDNS}/${VPN_FQDN}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update tenant id
-sed -i "s/{tenantId}/${TENANT_ID}/" "/var/www/${INTERMEDIATE_FQDN}/index.php"
+sed -i "s/{tenantId}/${TENANT_ID}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update application id
-sed -i "s/{applicationId}/${APPLICATION_ID}/" "/var/www/${INTERMEDIATE_FQDN}/index.php"
+sed -i "s/{applicationId}/${APPLICATION_ID}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update secret application token
-sed -i "s/{secretToken}/${SECRET_TOKEN}/" "/var/www/${INTERMEDIATE_FQDN}/index.php"
+sed -i "s/{secretToken}/${SECRET_TOKEN}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update admin api token
-sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/var/www/${INTERMEDIATE_FQDN}/index.php"
+sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/usr/share/vpn-provisioning/web/index.php"
 
 ###############################################################################
 # CERTBOT
@@ -73,15 +74,17 @@ systemctl restart apache2
 ###############################################################################
 # CRON
 ###############################################################################
-mkdir -p -m 600 /etc/eduVpnProvisioning
-cp -p ./revokeVpnConfigs "/etc/eduVpnProvisioning/revokeVpnConfigs"
-touch /etc/eduVpnProvisioning/localDeviceIds.txt
-chmod 666 /etc/eduVpnProvisioning/localDeviceIds.txt
 
-sed -i "s/{applicationId}/${APPLICATION_ID}/" "/etc/eduVpnProvisioning/revokeVpnConfigs"
-sed -i "s/{secretToken}/${SECRET_TOKEN}/" "/etc/eduVpnProvisioning/revokeVpnConfigs"
-sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/etc/eduVpnProvisioning/revokeVpnConfigs"
-sed -i "s/vpn.example/${VPN_FQDN}/" "/etc/eduVpnProvisioning/revokeVpnConfigs"
-sed -i "s/{tenantId}/${TENANT_ID}/" "/etc/eduVpnProvisioning/revokeVpnConfigs"
+mkdir -p "/usr/libexec/vpn-provisioning"
+install -m 700 ./revokeVpnConfigs "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
+mkdir -p -m 700 "/var/lib/vpn-provisioning"
+touch "/var/lib/vpn-provisioning/localDeviceIds.txt"
+chmod 666 "/var/lib/vpn-provisioning/localDeviceIds.txt"
+
+sed -i "s/{applicationId}/${APPLICATION_ID}/" "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
+sed -i "s/{secretToken}/${SECRET_TOKEN}/" "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
+sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
+sed -i "s/vpn.example/${VPN_FQDN}/" "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
+sed -i "s/{tenantId}/${TENANT_ID}/" "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
 
 cp ./eduVpnProvisioning /etc/cron.d/eduVpnProvisioning

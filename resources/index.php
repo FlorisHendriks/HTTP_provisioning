@@ -155,7 +155,7 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
 $config = curl_exec($ch);
 
-$file = "/etc/eduVpnProvisioning/localDeviceIds.txt";
+$file = "/var/lib/vpn-provisioning/localDeviceIds.txt";
 if (strpos(file_get_contents($file), $managedId) === false) {
         file_put_contents($file, $managedId . "\n", FILE_APPEND);
 }
