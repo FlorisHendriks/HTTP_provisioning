@@ -59,7 +59,7 @@ sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/var/www/${INTERMEDIATE_FQDN}/in
 a2ensite "${INTERMEDIATE_FQDN}"
 systemctl restart apache2
 
-certbot certonly -d "${INTERMEDIATE_FQDN}" --apache
+certbot certonly -d "${INTERMEDIATE_FQDN}" --webroot --webroot-path /var/www/html
 
 sed -i "s/#SSLEngine/SSLEngine/" "/etc/apache2/sites-available/${INTERMEDIATE_FQDN}.conf"
 sed -i "s/#Redirect/Redirect/" "/etc/apache2/sites-available/${INTERMEDIATE_FQDN}.conf"
