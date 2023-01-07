@@ -5,7 +5,7 @@ param (
  )
 if(-not($s) -or -not($p))
 {
-	Throw 'You did not (fully) specify the parameters -s, -p and -t'
+	Throw 'You did not (fully) specify the parameters -s and -p'
 }
 "try{
     # Get managed device id
