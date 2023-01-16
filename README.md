@@ -140,7 +140,7 @@ In order to mitigate this we are going to use a different certificate that Intun
 # Implementation
 ## Prerequisites
 * An Intune enrolled Windows 10/11 device or MacOS Monterey device
-* [Debian v3 eduVPN server with the admin API enabled](https://github.com/eduvpn/documentation/blob/v3/ADMIN_API.md) 
+* [Debian or Fedora v3 eduVPN server with the admin API enabled](https://github.com/eduvpn/documentation/blob/v3/ADMIN_API.md) 
 * [Git installed](https://git-scm.com/download/win)
 * Access to a Microsoft Endpoint Manager (Intune) tenant.
 * Working DNS entry for your intermediate webserver, e.g. intermediate.example.org.
