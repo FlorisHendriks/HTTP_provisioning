@@ -1,0 +1,18 @@
+# DNS name this intermediate Web Server is publically accessible.
+INTERMEDIATE_FQDN=vpn.example
+
+# Base URL of the eduVPN server.  Must have leading `https://` and no
+# trailing slash.
+VPN_URL={vpnUrl}
+
+# eduVPN server admin API Bearer token
+ADMIN_API_TOKEN={adminApiToken}
+
+# Azure tenant ID in FQDN or GUID format.
+TENANT_ID={tenantId}
+
+# Application (client) ID
+APPLICATION_ID={applicationId}
+
+# Client secret value
+SECRET_TOKEN={secretToken}

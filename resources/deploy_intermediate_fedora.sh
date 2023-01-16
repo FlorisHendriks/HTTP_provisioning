@@ -8,21 +8,27 @@ if ! [ "root" = "$(id -u -n)" ]; then
     echo "ERROR: ${0} must be run as root!"; exit 1
 fi
 
-printf "DNS name of the intermediate Web Server: "; read -r INTERMEDIATE_FQDN
-
 VPN_URL=http://localhost
-printf "URL of eduVPN server [%s]: " "${VPN_URL}"; read -r VPN_URL_USER
-VPN_URL=${VPN_URL_USER:-${VPN_URL}}
 
-printf "Directory (tenant) ID: "; read -r TENANT_ID
+[ -f /etc/vpn-provisioning ] && . /etc/vpn-provisioning
 
-printf "Application (client) ID: "; read -r APPLICATION_ID
+printf "DNS name of the intermediate Web Server [%s]: " "${INTERMEDIATE_FQDN}"; read -r USER_INPUT
+INTERMEDIATE_FQDN=$(echo "${USER_INPUT:-${INTERMEDIATE_FQDN}}" | tr '[:upper:]' '[:lower:]')
 
-printf "Secret token of the registered application: "; read -r SECRET_TOKEN
+printf "URL of eduVPN server [%s]: " "${VPN_URL}"; read -r USER_INPUT
+VPN_URL=${USER_INPUT:-${VPN_URL}}
 
-printf "Token of the admin api from eduVPN: "; read -r ADMIN_API_TOKEN
+printf "Token of the admin API from eduVPN [%s]: " "${ADMIN_API_TOKEN:0:3}****"; read -r USER_INPUT
+ADMIN_API_TOKEN=${USER_INPUT:-${ADMIN_API_TOKEN}}
 
-WEB_FQDN=$(echo "${WEB_FQDN}" | tr '[:upper:]' '[:lower:]')
+printf "Azure Tenant ID [%s]: " "${TENANT_ID}"; read -r USER_INPUT
+TENANT_ID=${USER_INPUT:-${TENANT_ID}}
+
+printf "Application (client) ID [%s]: " "${APPLICATION_ID}"; read -r USER_INPUT
+APPLICATION_ID=${USER_INPUT:-${APPLICATION_ID}}
+
+printf "Secret token of the registered application [%s]: " "${SECRET_TOKEN:0:3}****"; read -r USER_INPUT
+SECRET_TOKEN=${USER_INPUT:-${SECRET_TOKEN}}
 
 ###############################################################################
 # SOFTWARE
@@ -48,7 +54,7 @@ sed -i "s/vpn.example/${INTERMEDIATE_FQDN}/" "/etc/httpd/conf.d/${INTERMEDIATE_F
 sed -i "s/vpn.example/${INTERMEDIATE_FQDN}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update vpn name
-sed -i "s/{vpnUrl}/${VPN_URL}/" "/usr/share/vpn-provisioning/web/index.php"
+sed -i "s/{vpnUrl}/${VPN_URL//\//\\/}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update tenant id
 sed -i "s/{tenantId}/${TENANT_ID}/" "/usr/share/vpn-provisioning/web/index.php"
@@ -57,7 +63,7 @@ sed -i "s/{tenantId}/${TENANT_ID}/" "/usr/share/vpn-provisioning/web/index.php"
 sed -i "s/{applicationId}/${APPLICATION_ID}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update secret application token
-sed -i "s/{secretToken}/${SECRET_TOKEN}/" "/usr/share/vpn-provisioning/web/index.php"
+sed -i "s/{secretToken}/${${SECRET_TOKEN//\\/\\\\}//\//\\/}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update admin api token
 sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/usr/share/vpn-provisioning/web/index.php"
@@ -90,16 +96,19 @@ systemctl start httpd
 # CRON
 ###############################################################################
 
+install -m 600 etc/vpn-provisioning "/etc/vpn-provisioning"
+
+sed -i "s/vpn.example/${INTERMEDIATE_FQDN}/" "/etc/vpn-provisioning"
+sed -i "s/{vpnUrl}/${VPN_URL//\//\\/}/" "/etc/vpn-provisioning"
+sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/etc/vpn-provisioning"
+sed -i "s/{tenantId}/${TENANT_ID}/" "/etc/vpn-provisioning"
+sed -i "s/{applicationId}/${APPLICATION_ID}/" "/etc/vpn-provisioning"
+sed -i "s/{secretToken}/${${SECRET_TOKEN//\\/\\\\}//\//\\/}/" "/etc/vpn-provisioning"
+
 mkdir -p "/usr/libexec/vpn-provisioning"
-install -m 700 ./revokeVpnConfigs "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
+install -m 755 ./revokeVpnConfigs "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
 mkdir -p -m 700 "/var/lib/vpn-provisioning"
 touch "/var/lib/vpn-provisioning/localDeviceIds.txt"
 chmod 666 "/var/lib/vpn-provisioning/localDeviceIds.txt"
-
-sed -i "s/{applicationId}/${APPLICATION_ID}/" "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
-sed -i "s/{secretToken}/${SECRET_TOKEN}/" "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
-sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
-sed -i "s/{vpnUrl}/${VPN_URL}/" "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
-sed -i "s/{tenantId}/${TENANT_ID}/" "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
 
 cp ./eduVpnProvisioning /etc/cron.d/eduVpnProvisioning

@@ -1,11 +1,6 @@
 #!/bin/bash
 
-# TODO: Move config to /etc/default or /etc/sysconfig to allow later reconfig.
-VPN_URL={vpnUrl}
-TENANT_ID={tenantId}
-APPLICATION_ID={applicationId}
-SECRET_TOKEN={secretToken}
-ADMIN_API_TOKEN={adminApiToken}
+[ -f /etc/vpn-provisioning ] && . /etc/vpn-provisioning
 
 # Get the Intune token so that we are allowed to do API calls
 token="$(curl --silent --request POST "https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token" \
