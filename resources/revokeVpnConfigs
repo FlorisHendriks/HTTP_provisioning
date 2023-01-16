@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # TODO: Move config to /etc/default or /etc/sysconfig to allow later reconfig.
-VPN_FQDN=vpn.example
+VPN_URL={vpnUrl}
 TENANT_ID={tenantId}
 APPLICATION_ID={applicationId}
 SECRET_TOKEN={secretToken}
@@ -34,7 +34,7 @@ revokedIds=($(printf '%s\n' "${localDeviceIds[@]}" "${managedIds[@]}" "${managed
 # Revoke the VPN configs from unenrolled Intune devices
 for id in ${revokedIds}
 do
-	response="$(curl --include --silent "https://${VPN_FQDN}/vpn-user-portal/admin/api/v1/destroy" \
+	response="$(curl --include --silent "${VPN_URL}/vpn-user-portal/admin/api/v1/destroy" \
 		--header "Authorization: Bearer ${ADMIN_API_TOKEN}" \
 		--data "user_id=${id}")"
 	http_status=$(echo "${response}" | awk 'NR==1 {print $2}' | tr -d '\n')

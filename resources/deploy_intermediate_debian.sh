@@ -10,7 +10,9 @@ fi
 
 printf "DNS name of the intermediate Web Server: "; read -r INTERMEDIATE_FQDN
 
-printf "DNS name of eduVPN: "; read -r VPN_FQDN
+VPN_URL=http://localhost
+printf "URL of eduVPN server [%s]: " "${VPN_URL}"; read -r VPN_URL_USER
+VPN_URL=${VPN_URL_USER:-${VPN_URL}}
 
 printf "Directory (tenant) ID: "; read -r TENANT_ID
 
@@ -46,7 +48,7 @@ sed -i "s/vpn.example/${INTERMEDIATE_FQDN}/" "/etc/apache2/sites-available/${INT
 sed -i "s/vpn.example/${INTERMEDIATE_FQDN}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update vpn name
-sed -i "s/{vpnDNS}/${VPN_FQDN}/" "/usr/share/vpn-provisioning/web/index.php"
+sed -i "s/{vpnUrl}/${VPN_URL}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update tenant id
 sed -i "s/{tenantId}/${TENANT_ID}/" "/usr/share/vpn-provisioning/web/index.php"
@@ -91,7 +93,7 @@ chmod 666 "/var/lib/vpn-provisioning/localDeviceIds.txt"
 sed -i "s/{applicationId}/${APPLICATION_ID}/" "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
 sed -i "s/{secretToken}/${SECRET_TOKEN}/" "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
 sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
-sed -i "s/vpn.example/${VPN_FQDN}/" "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
+sed -i "s/{vpnUrl}/${VPN_URL}/" "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
 sed -i "s/{tenantId}/${TENANT_ID}/" "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
 
 cp ./eduVpnProvisioning /etc/cron.d/eduVpnProvisioning

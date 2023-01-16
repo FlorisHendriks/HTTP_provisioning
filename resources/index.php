@@ -144,7 +144,7 @@ if($boolean){
 
 $ch = curl_init();
 
-curl_setopt($ch, CURLOPT_URL, 'https://{vpnDNS}/vpn-user-portal/admin/api/v1/create');
+curl_setopt($ch, CURLOPT_URL, '{vpnUrl}/vpn-user-portal/admin/api/v1/create');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, "user_id=" . $_POST["user_id"] . "&profile_id=" . $_POST["profile_id"]);
