@@ -31,7 +31,7 @@ if(-not($s) -or -not($p))
             `$reader = New-Object System.IO.StreamReader(`$respStream)
             `$reader.BaseStream.Position = 0
 	    `$responseBody = `$reader.ReadToEnd()
-	    throw `"$_.Exception ``r``n`$responseBody`"
+	    throw `"`$_.Exception ``r``n`$responseBody`"
 	}
     if(`$Response.StatusCode -eq 200)
     {
