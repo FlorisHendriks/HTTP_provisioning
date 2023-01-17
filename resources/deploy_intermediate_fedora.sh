@@ -54,7 +54,8 @@ sed -i "s/vpn.example/${INTERMEDIATE_FQDN}/" "/etc/httpd/conf.d/${INTERMEDIATE_F
 sed -i "s/vpn.example/${INTERMEDIATE_FQDN}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update vpn name
-sed -i "s/{vpnUrl}/${VPN_URL//\//\\/}/" "/usr/share/vpn-provisioning/web/index.php"
+VPN_URL_SED=${VPN_URL//\//\\/}
+sed -i "s/{vpnUrl}/${VPN_URL_SED}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update tenant id
 sed -i "s/{tenantId}/${TENANT_ID}/" "/usr/share/vpn-provisioning/web/index.php"
@@ -63,7 +64,9 @@ sed -i "s/{tenantId}/${TENANT_ID}/" "/usr/share/vpn-provisioning/web/index.php"
 sed -i "s/{applicationId}/${APPLICATION_ID}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update secret application token
-sed -i "s/{secretToken}/${${SECRET_TOKEN//\\/\\\\}//\//\\/}/" "/usr/share/vpn-provisioning/web/index.php"
+SECRET_TOKEN_SED=${SECRET_TOKEN//\\/\\\\}
+SECRET_TOKEN_SED=${SECRET_TOKEN_SED//\//\\/}
+sed -i "s/{secretToken}/${SECRET_TOKEN_SED}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update admin api token
 sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/usr/share/vpn-provisioning/web/index.php"
@@ -99,11 +102,11 @@ systemctl start httpd
 install -m 600 etc/vpn-provisioning "/etc/vpn-provisioning"
 
 sed -i "s/vpn.example/${INTERMEDIATE_FQDN}/" "/etc/vpn-provisioning"
-sed -i "s/{vpnUrl}/${VPN_URL//\//\\/}/" "/etc/vpn-provisioning"
+sed -i "s/{vpnUrl}/${VPN_URL_SED}/" "/etc/vpn-provisioning"
 sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/etc/vpn-provisioning"
 sed -i "s/{tenantId}/${TENANT_ID}/" "/etc/vpn-provisioning"
 sed -i "s/{applicationId}/${APPLICATION_ID}/" "/etc/vpn-provisioning"
-sed -i "s/{secretToken}/${${SECRET_TOKEN//\\/\\\\}//\//\\/}/" "/etc/vpn-provisioning"
+sed -i "s/{secretToken}/${SECRET_TOKEN_SED}/" "/etc/vpn-provisioning"
 
 mkdir -p "/usr/libexec/vpn-provisioning"
 install -m 755 ./revokeVpnConfigs "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
