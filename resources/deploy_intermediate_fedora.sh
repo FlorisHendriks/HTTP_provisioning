@@ -64,9 +64,7 @@ sed -i "s/{tenantId}/${TENANT_ID}/" "/usr/share/vpn-provisioning/web/index.php"
 sed -i "s/{applicationId}/${APPLICATION_ID}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update secret application token
-SECRET_TOKEN_SED=${SECRET_TOKEN//\\/\\\\}
-SECRET_TOKEN_SED=${SECRET_TOKEN_SED//\//\\/}
-sed -i "s/{secretToken}/${SECRET_TOKEN_SED}/" "/usr/share/vpn-provisioning/web/index.php"
+sed -i "s/{secretToken}/${SECRET_TOKEN}/" "/usr/share/vpn-provisioning/web/index.php"
 
 # update admin api token
 sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/usr/share/vpn-provisioning/web/index.php"
@@ -106,7 +104,7 @@ sed -i "s/{vpnUrl}/${VPN_URL_SED}/" "/etc/vpn-provisioning"
 sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/etc/vpn-provisioning"
 sed -i "s/{tenantId}/${TENANT_ID}/" "/etc/vpn-provisioning"
 sed -i "s/{applicationId}/${APPLICATION_ID}/" "/etc/vpn-provisioning"
-sed -i "s/{secretToken}/${SECRET_TOKEN_SED}/" "/etc/vpn-provisioning"
+sed -i "s/{secretToken}/${SECRET_TOKEN}/" "/etc/vpn-provisioning"
 
 mkdir -p "/usr/libexec/vpn-provisioning"
 install -m 755 ./revokeVpnConfigs "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
