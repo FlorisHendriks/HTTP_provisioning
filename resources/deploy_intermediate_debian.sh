@@ -104,6 +104,7 @@ mkdir -p "/usr/libexec/vpn-provisioning"
 install -m 755 ./revokeVpnConfigs "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
 mkdir -p -m 700 "/var/lib/vpn-provisioning"
 touch "/var/lib/vpn-provisioning/localDeviceIds.txt"
-chmod 666 "/var/lib/vpn-provisioning/localDeviceIds.txt"
+chown -R www-data:www-data "/var/lib/vpn-provisioning"
+chcon -R -h -t httpd_sys_rw_content_t "/var/lib/vpn-provisioning"
 
 cp ./eduVpnProvisioning /etc/cron.d/eduVpnProvisioning
