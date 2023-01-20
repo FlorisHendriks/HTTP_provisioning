@@ -152,6 +152,15 @@ $headers = array();
 $headers[] = 'Authorization: Bearer {adminApiToken}';
 $headers[] = 'Content-Type: application/x-www-form-urlencoded';
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+curl_setopt($ch, CURLOPT_HEADERFUNCTION,
+	function($curl, $header)
+	{
+		$h = explode(':', $header, 2);
+		if (count($h) >= 2 && strcasecmp(trim($h[0]), 'Content-Type') == 0)
+		        header($header);
+		return strlen($header);
+	}
+);
 
 $config = curl_exec($ch);
 
@@ -159,7 +168,6 @@ $file = "/var/lib/vpn-provisioning/localDeviceIds.txt";
 if (strpos(file_get_contents($file), $managedId) === false) {
         file_put_contents($file, $managedId . "\n", FILE_APPEND);
 }
-
 
 if (curl_errno($ch)) {
 	http_response_code(502);
