@@ -153,19 +153,20 @@ We first need to register an application in Azure. This will allow us to do API 
 * Go to Certificates & secrets and create a new client secret, temporarily save this value somewhere.
 
 ## Step 2
-Perform these steps on the server which hosts eduVPN:
+Perform these steps on the server which will host intermediate server:
 
     $ git clone https://github.com/FlorisHendriks98/HTTP_provisioning.git
     $ cd HTTP_provisioning/resources/
-    $ sudo ./deploy_intermediate.sh
+    $ sudo ./deploy_intermediate_debian.sh
 
 The script will ask to enter some values in order to set everything up properly.
 
 ## Step 3
-Open up a powershell on a device
+Open up a powershell on a Windows device
   
     > git clone https://github.com/FlorisHendriks98/HTTP_provisioning.git
     > cd HTTP_provisioning
+    > Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
     > .\Create_Intune_Management_Script.ps1 -p "profile" -s "intermediate.example.org"
 
 The arguments -p you must specify the VPN profile you want to use as system VPN and -s you must specify the hostname of the intermediate server.
