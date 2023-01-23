@@ -162,16 +162,7 @@ Perform these steps on the server which will host intermediate server:
 The script will ask to enter some values in order to set everything up properly.
 
 ## Step 3
-Open up a powershell on a Windows device
-  
-    > git clone https://github.com/FlorisHendriks98/HTTP_provisioning.git
-    > cd HTTP_provisioning
-    > Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
-    > .\Create_Intune_Management_Script.ps1 -p "profile" -s "intermediate.example.org"
-
-The arguments -p you must specify the VPN profile you want to use as system VPN and -s you must specify the hostname of the intermediate server.
-
-.\Create_Intune_Management_Script.ps1 creates two scripts. The .ps1 script is for Windows and the .sh script is for macOS. The scripts are put in the same directory as .\Create_Intune_Management_Script.ps1.
+Open up a browser and visit https://intermediate.example/management_script/ (replace hostname with your intermediate server FQDN) to generate Windows_Intune_management_script.ps1 and macOS_management_script.sh management scripts.
 
 ## Step 4
 Place and configure the Windows_Intune_management_script.ps1 and macOS_management_script.sh in Intune. Make sure that you configure the Windows PowerShell script to run in a 64 bit PowerShell host (see Figure below).

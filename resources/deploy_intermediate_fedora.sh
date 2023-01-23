@@ -46,28 +46,32 @@ cp ./intermediate.example.conf "/etc/httpd/conf.d/${INTERMEDIATE_FQDN}.conf"
 mkdir -p "/usr/share/vpn-provisioning/certs"
 cp ./MicrosoftIntuneRootCertificate.cer "/usr/share/vpn-provisioning/certs/MicrosoftIntuneRootCertificate.cer"
 
-mkdir -p "/usr/share/vpn-provisioning/web"
-cp ./index.php "/usr/share/vpn-provisioning/web"
+[ -f "/usr/share/vpn-provisioning/web/index.php" ] && rm "/usr/share/vpn-provisioning/web/index.php"
+mkdir -p "/usr/share/vpn-provisioning/web/profile"
+cp web/profile/index.php "/usr/share/vpn-provisioning/web/profile"
+mkdir -p "/usr/share/vpn-provisioning/web/management_script"
+cp web/management_script/index.php "/usr/share/vpn-provisioning/web/management_script"
 
 # update hostname
 sed -i "s/vpn.example/${INTERMEDIATE_FQDN}/" "/etc/httpd/conf.d/${INTERMEDIATE_FQDN}.conf"
-sed -i "s/vpn.example/${INTERMEDIATE_FQDN}/" "/usr/share/vpn-provisioning/web/index.php"
+sed -i "s/vpn.example/${INTERMEDIATE_FQDN}/" "/usr/share/vpn-provisioning/web/profile/index.php"
+sed -i "s/vpn.example/${INTERMEDIATE_FQDN}/" "/usr/share/vpn-provisioning/web/management_script/index.php"
 
 # update vpn name
 VPN_URL_SED=${VPN_URL//\//\\/}
-sed -i "s/{vpnUrl}/${VPN_URL_SED}/" "/usr/share/vpn-provisioning/web/index.php"
+sed -i "s/{vpnUrl}/${VPN_URL_SED}/" "/usr/share/vpn-provisioning/web/profile/index.php"
 
 # update tenant id
-sed -i "s/{tenantId}/${TENANT_ID}/" "/usr/share/vpn-provisioning/web/index.php"
+sed -i "s/{tenantId}/${TENANT_ID}/" "/usr/share/vpn-provisioning/web/profile/index.php"
 
 # update application id
-sed -i "s/{applicationId}/${APPLICATION_ID}/" "/usr/share/vpn-provisioning/web/index.php"
+sed -i "s/{applicationId}/${APPLICATION_ID}/" "/usr/share/vpn-provisioning/web/profile/index.php"
 
 # update secret application token
-sed -i "s/{secretToken}/${SECRET_TOKEN}/" "/usr/share/vpn-provisioning/web/index.php"
+sed -i "s/{secretToken}/${SECRET_TOKEN}/" "/usr/share/vpn-provisioning/web/profile/index.php"
 
 # update admin api token
-sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/usr/share/vpn-provisioning/web/index.php"
+sed -i "s/{adminApiToken}/${ADMIN_API_TOKEN}/" "/usr/share/vpn-provisioning/web/profile/index.php"
 
 ###############################################################################
 # CERTBOT
@@ -114,3 +118,11 @@ chown -R apache:apache "/var/lib/vpn-provisioning"
 chcon -R -h -t httpd_sys_rw_content_t "/var/lib/vpn-provisioning"
 
 cp ./eduVpnProvisioning /etc/cron.d/eduVpnProvisioning
+
+###############################################################################
+# NOTES
+###############################################################################
+
+echo "Please visit:"
+echo "  https://${INTERMEDIATE_FQDN}/management_script/"
+echo "to generate scripts for macOS and Windows eduVPN profile deployments."
