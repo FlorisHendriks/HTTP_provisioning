@@ -179,9 +179,8 @@ https://user-images.githubusercontent.com/47246332/189675495-105cdfa0-3b7a-4c7a-
 If some things do not go as planned you can check the log files.
 * On the Windows client it is stored at "C:\Windows\Temp\eduVpnDeployment.log". 
 * On the macOS client it is stored at "\Library\Logs\Microsoft\eduVpnDeployment.log" 
-* Revocation logs can be found at "/etc/eduVpnProvisioning/revokeVpnConfigs"
+* Revocation logs can be found at "/var/lib/vpn-provisioning/revocation.log"
 
 # Future Work
 * Lots and lots of testing, finding edge cases and debug potential issues.
 * Improve the code and let it run more efficiently
-* Extend support for eduVPN Fedora servers

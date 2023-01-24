@@ -41,10 +41,10 @@ SECRET_TOKEN=${USER_INPUT:-${SECRET_TOKEN}}
 # APACHE
 ###############################################################################
 
-cp ./intermediate.example.conf "/etc/httpd/conf.d/${INTERMEDIATE_FQDN}.conf"
+cp etc/httpd/intermediate.example.conf "/etc/httpd/conf.d/${INTERMEDIATE_FQDN}.conf"
 
 mkdir -p "/usr/share/vpn-provisioning/certs"
-cp ./MicrosoftIntuneRootCertificate.cer "/usr/share/vpn-provisioning/certs/MicrosoftIntuneRootCertificate.cer"
+cp MicrosoftIntuneRootCertificate.cer "/usr/share/vpn-provisioning/certs/MicrosoftIntuneRootCertificate.cer"
 
 [ -f "/usr/share/vpn-provisioning/web/index.php" ] && rm "/usr/share/vpn-provisioning/web/index.php"
 mkdir -p "/usr/share/vpn-provisioning/web/profile"
@@ -111,13 +111,14 @@ sed -i "s/{applicationId}/${APPLICATION_ID}/" "/etc/vpn-provisioning"
 sed -i "s/{secretToken}/${SECRET_TOKEN}/" "/etc/vpn-provisioning"
 
 mkdir -p "/usr/libexec/vpn-provisioning"
-install -m 755 ./revokeVpnConfigs "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
+install -m 755 revokeVpnConfigs "/usr/libexec/vpn-provisioning/revokeVpnConfigs"
 mkdir -p -m 700 "/var/lib/vpn-provisioning"
 touch "/var/lib/vpn-provisioning/localDeviceIds.txt"
 chown -R apache:apache "/var/lib/vpn-provisioning"
 chcon -R -h -t httpd_sys_rw_content_t "/var/lib/vpn-provisioning"
 
-cp ./eduVpnProvisioning /etc/cron.d/eduVpnProvisioning
+[ -f /etc/cron.d/eduVpnProvisioning ] && rm -f /etc/cron.d/eduVpnProvisioning
+cp etc/cron.d/vpn-provisioning /etc/cron.d/vpn-provisioning
 
 ###############################################################################
 # NOTES
