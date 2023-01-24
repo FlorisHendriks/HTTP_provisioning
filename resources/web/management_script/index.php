@@ -1,9 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * eduVPN - End-user friendly VPN.
+ *
+ * Copyright: 2014-2022, The Commons Conservancy eduVPN Programme
+ * SPDX-License-Identifier: AGPL-3.0+
+ */
+
+require_once '/usr/share/php/Vpn/Portal/autoload.php';
+$baseDir = '/usr/share/vpn-user-portal';
+
+use Vpn\Portal\Cfg\Config;
+
 $platform = $_GET['platform'];
 $profile_id = $_GET['profile_id'];
 
 if (!isset($platform) || !isset($profile_id) || $profile_id == '') {
+    $config = Config::fromFile($baseDir.'/config/config.php');
 ?><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>eduVPN Intune-provisioning Management Script Generator</title>
@@ -12,16 +27,18 @@ if (!isset($platform) || !isset($profile_id) || $profile_id == '') {
 <body>
 <form method="GET">
 	<h1>eduVPN Intune-provisioning Management Script Generator</h1>
-	<p>This script generates platform-dependent script for IT admins to deploy using Microsoft
-	Intune/Endpoint Manager.</p>
-	<p>Platform:<br/>
-	<select name="platform">
-		<option value="macos">macOS Bash script</option>
-		<option value="windows">Windows PowerShell script</option>
-	</select></p>
-	<p>eduVPN Profile ID (e.g. default):<br/>
-	<input type="text" name="profile_id" /></p>
-	<p><input type="submit" value="Generate"></p>
+	<p>This website generates platform-dependent script for IT admins to deploy using Microsoft Endpoint Manager.</p>
+	<p>1. Select eduVPN Profile:<br/>
+	<select name="profile_id" size="10">
+<?php
+    foreach ($config->profileConfigList() as $profileConfig) {
+        $id = $profileConfig->profileId();
+        echo '<option value="'.htmlspecialchars($id).'"'.($id === $profile_id ? ' selected': '').'>'.htmlspecialchars($profileConfig->displayName()).'</option>';
+    }
+?>
+	</select>
+	<p>2. Select script platform:<br/>
+	<input type="submit" name="platform" value="windows"> <input type="submit" name="platform" value="macos"></p>
 </form>
 </body><?php
 } else {
