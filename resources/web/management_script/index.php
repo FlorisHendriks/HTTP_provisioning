@@ -87,7 +87,7 @@ if (!isset($platform) || !isset($profile_id) || $profile_id == '') {
         switch ($Response.Headers['Content-Type']) {
             'application/x-wireguard-profile' {
                 # Install and deploy WireGuard tunnel
-                $service = Get-Service -Name 'WireGuardTunnel$wg0' -ErrorAction Ignore
+                $service = Get-Service -Name 'WireGuardTunnel$eduVPN' -ErrorAction Ignore
                 if ($service -eq $null) {
                     .\winget.exe install WireGuard.WireGuard --silent --accept-package-agreements --accept-source-agreements | Out-Null
                 } else {
@@ -97,15 +97,15 @@ if (!isset($platform) || !isset($profile_id) || $profile_id == '') {
                 # We create a new folder in the WireGuard directory.
                 # We can't put it in WireGuard\Data directory as that folder is created only when we start the WireGuard application
                 # (https://www.reddit.com/r/WireGuard/comments/x6f1gl/missing_data_directory_when_installing_wireguard/)
-                New-Item -Path 'C:\Program Files\WireGuard' -Name 'eduVpnProvisioning' -ItemType 'directory' -ErrorAction Ignore
+                New-Item -Path 'C:\Program Files\WireGuard' -Name 'vpn-provisioning' -ItemType 'directory' -ErrorAction Ignore
                 # Limit access to the System user and administrators.
-                icacls 'C:\Program Files\WireGuard\eduVpnProvisioning' /inheritance:r /grant:r 'SYSTEM:(OI)(CI)F' /grant:r 'Administrators:(OI)(CI)F'
+                icacls 'C:\Program Files\WireGuard\vpn-provisioning' /inheritance:r /grant:r 'SYSTEM:(OI)(CI)F' /grant:r 'Administrators:(OI)(CI)F'
 
                 $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
-                [System.IO.File]::WriteAllLines('C:\Program Files\WireGuard\eduVpnProvisioning\wg0.conf', "$Response", $Utf8NoBomEncoding)
+                [System.IO.File]::WriteAllLines('C:\Program Files\WireGuard\vpn-provisioning\eduVPN.conf', "$Response", $Utf8NoBomEncoding)
 
                 if ($service -eq $null) {
-                    & 'C:\Program Files\WireGuard\wireguard.exe' /installtunnelservice 'C:\Program Files\WireGuard\eduVpnProvisioning\wg0.conf'
+                    & 'C:\Program Files\WireGuard\wireguard.exe' /installtunnelservice 'C:\Program Files\WireGuard\vpn-provisioning\eduVPN.conf'
                 } else {
                     $service | Start-Service
                 }
@@ -123,7 +123,7 @@ if (!isset($platform) || !isset($profile_id) || $profile_id == '') {
                 icacls "C:\Program Files\OpenVPN\config-auto" /inheritance:r /grant:r "SYSTEM:(OI)(CI)F" /grant:r "Administrators:(OI)(CI)F"
 
                 $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
-                [System.IO.File]::WriteAllLines('C:\Program Files\OpenVPN\config-auto\openvpn.ovpn', "$Response", $Utf8NoBomEncoding)
+                [System.IO.File]::WriteAllLines('C:\Program Files\OpenVPN\config-auto\eduVPN.ovpn', "$Response", $Utf8NoBomEncoding)
 
                 $service | Start-Service
             }
