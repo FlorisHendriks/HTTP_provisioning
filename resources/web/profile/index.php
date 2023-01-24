@@ -156,8 +156,13 @@ curl_setopt($ch, CURLOPT_HEADERFUNCTION,
 	function($curl, $header)
 	{
 		$h = explode(':', $header, 2);
-		if (count($h) >= 2 && strcasecmp(trim($h[0]), 'Content-Type') == 0)
-			header($header);
+		if (count($h) >= 2) {
+			switch (strtolower(trim($h[0]))) {
+			case 'content-type':
+			case 'expires':
+				header($header);
+			}
+		}
 		return strlen($header);
 	}
 );
