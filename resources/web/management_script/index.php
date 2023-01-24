@@ -84,29 +84,48 @@ if (!isset($platform) || !isset($profile_id) || $profile_id == '') {
         }
         cd $WingetPath
 
-        # Install and deploy WireGuard tunnel if we received a wireguard-configuration
         switch ($Response.Headers['Content-Type']) {
             'application/x-wireguard-profile' {
-                .\winget.exe install --silent WireGuard.WireGuard --accept-package-agreements --accept-source-agreements | Out-Null
+                # Install and deploy WireGuard tunnel
+                $service = Get-Service -Name 'WireGuardTunnel$wg0' -ErrorAction Ignore
+                if ($service -eq $null) {
+                    .\winget.exe install WireGuard.WireGuard --silent --accept-package-agreements --accept-source-agreements | Out-Null
+                } else {
+                    $service | Stop-Service
+                }
 
                 # We create a new folder in the WireGuard directory.
                 # We can't put it in WireGuard\Data directory as that folder is created only when we start the WireGuard application
                 # (https://www.reddit.com/r/WireGuard/comments/x6f1gl/missing_data_directory_when_installing_wireguard/)
                 New-Item -Path 'C:\Program Files\WireGuard' -Name 'eduVpnProvisioning' -ItemType 'directory' -ErrorAction Ignore
-
                 # Limit access to the System user and administrators.
                 icacls 'C:\Program Files\WireGuard\eduVpnProvisioning' /inheritance:r /grant:r 'SYSTEM:(OI)(CI)F' /grant:r 'Administrators:(OI)(CI)F'
 
                 $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
                 [System.IO.File]::WriteAllLines('C:\Program Files\WireGuard\eduVpnProvisioning\wg0.conf', "$Response", $Utf8NoBomEncoding)
-                & 'C:\Program Files\WireGuard\wireguard.exe' /installtunnelservice 'C:\Program Files\WireGuard\eduVpnProvisioning\wg0.conf'
+
+                if ($service -eq $null) {
+                    & 'C:\Program Files\WireGuard\wireguard.exe' /installtunnelservice 'C:\Program Files\WireGuard\eduVpnProvisioning\wg0.conf'
+                } else {
+                    $service | Start-Service
+                }
             }
             'application/x-openvpn-profile' {
-                .\winget.exe install OpenVPNTechnologies.OpenVPN --silent --accept-package-agreements --accept-source-agreements --override "ADDLOCAL=OpenVPN.Service,OpenVPN,Drivers.TAPWindows6,Drivers" | Out-Null
+                # Install and deploy OpenVPN tunnel
+                $service = Get-Service -Name 'OpenVPNService' -ErrorAction Ignore
+                if ($service -eq $null) {
+                    .\winget.exe install OpenVPNTechnologies.OpenVPN --silent --accept-package-agreements --accept-source-agreements --override "ADDLOCAL=OpenVPN.Service,OpenVPN,Drivers.TAPWindows6,Drivers" | Out-Null
+                    $service = Get-Service -Name 'OpenVPNService'
+                }
+                $service | Stop-Service
+
+                # Limit access to the System user and administrators.
                 icacls "C:\Program Files\OpenVPN\config-auto" /inheritance:r /grant:r "SYSTEM:(OI)(CI)F" /grant:r "Administrators:(OI)(CI)F"
+
                 $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
                 [System.IO.File]::WriteAllLines('C:\Program Files\OpenVPN\config-auto\openvpn.ovpn', "$Response", $Utf8NoBomEncoding)
-                Restart-Service -Name OpenVPNService
+
+                $service | Start-Service
             }
             default {
                 Throw "Unexpected response: $($Response.Headers['Content-Type'])`r`n$Response"
