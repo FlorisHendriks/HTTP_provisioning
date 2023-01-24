@@ -24,30 +24,30 @@ $reversedString = "";
 // Reverse the first three parts of the oid (this is necessary
 // please refer to the blog post above)
 while($x < 3){
-        $originalString = substr($hex, $offset, $length);
-        $arrayWith2CharsPerElement = str_split($originalString, 2);
-        $arrayWithReversedKeys = array_reverse($arrayWith2CharsPerElement);
-        $newStringInReverseOrder = implode($arrayWithReversedKeys);
+	$originalString = substr($hex, $offset, $length);
+	$arrayWith2CharsPerElement = str_split($originalString, 2);
+	$arrayWithReversedKeys = array_reverse($arrayWith2CharsPerElement);
+	$newStringInReverseOrder = implode($arrayWithReversedKeys);
 
-        $reversedString .= $newStringInReverseOrder;
+	$reversedString .= $newStringInReverseOrder;
 
-        if($length == 8){
-                $length = $length - 4;
-        }
-        if($offset == 0){
-                $offset += 8;
-        }
-        else{
-                $offset += 4;
-        }
-        $x++;
+	if($length == 8){
+		$length = $length - 4;
+	}
+	if($offset == 0){
+		$offset += 8;
+	}
+	else{
+		$offset += 4;
+	}
+	$x++;
 }
 $ClientCertificateTenantId = $reversedString .= substr($hex, 16);
 
 if ($ClientCertificateTenantId != $tenantid){
 	http_response_code(403);
-        echo 'error, the certificate tenant id is not equal to the tenant id of Intune';
-        exit(1);
+	echo 'error, the certificate tenant id is not equal to the tenant id of Intune';
+	exit(1);
 }
 
 // We now know that the device certificate is part of Intune's correct tenant.
@@ -124,18 +124,18 @@ $managedId = $_SERVER["REMOTE_USER"];
 
 $num = substr_count($managedId, '-');
 if($num == 5){
-        $managedId = substr(strstr($managedId, '-'), 1);
+	$managedId = substr(strstr($managedId, '-'), 1);
 }
 
 foreach ($flat as $value){
-        if($value == $managedId){
-                $boolean = False;
-        }
+	if($value == $managedId){
+		$boolean = False;
+	}
 }
 if($boolean){
 	http_response_code(403);
-        echo 'error, the managed device id was not found in the Intune tenant';
-        exit(1);
+	echo 'error, the managed device id was not found in the Intune tenant';
+	exit(1);
 }
 
 
@@ -157,7 +157,7 @@ curl_setopt($ch, CURLOPT_HEADERFUNCTION,
 	{
 		$h = explode(':', $header, 2);
 		if (count($h) >= 2 && strcasecmp(trim($h[0]), 'Content-Type') == 0)
-		        header($header);
+			header($header);
 		return strlen($header);
 	}
 );
@@ -166,13 +166,13 @@ $config = curl_exec($ch);
 
 $file = "/var/lib/vpn-provisioning/localDeviceIds.txt";
 if (strpos(file_get_contents($file), $managedId) === false) {
-        file_put_contents($file, $managedId . "\n", FILE_APPEND);
+	file_put_contents($file, $managedId . "\n", FILE_APPEND);
 }
 
 if (curl_errno($ch)) {
 	http_response_code(502);
-        echo 'Error:' . curl_error($ch);
-        exit(1);
+	echo 'Error:' . curl_error($ch);
+	exit(1);
 }
 curl_close($ch);
 echo $config;
