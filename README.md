@@ -162,10 +162,10 @@ Perform these steps on the server which will host intermediate server:
 The script will ask to enter some values in order to set everything up properly.
 
 ## Step 3
-Open up a browser and visit https://intermediate.example/management_script/ (replace hostname with your intermediate server FQDN) to generate Windows_Intune_management_script.ps1 and macOS_management_script.sh management scripts.
+Open up a browser and visit https://intermediate.example.org/management_script/ (replace hostname with your intermediate server FQDN) to generate Install-VPN-Tunnel.ps1 and install_vpn_tunnel.sh management scripts.
 
 ## Step 4
-Place and configure the Windows_Intune_management_script.ps1 and macOS_management_script.sh in Intune. Make sure that you configure the Windows PowerShell script to run in a 64 bit PowerShell host (see Figure below).
+Place and configure the Install-VPN-Tunnel.ps1 and install_vpn_tunnel.sh in Intune. Make sure that you configure the Windows PowerShell script to run in a 64 bit PowerShell host (see Figure below).
 
 ![image](https://user-images.githubusercontent.com/47246332/188602159-d199b46b-71ac-4fb4-943f-cfac12ed29b9.png)
 
@@ -177,8 +177,8 @@ https://user-images.githubusercontent.com/47246332/189675495-105cdfa0-3b7a-4c7a-
 
 ## Troubleshooting
 If some things do not go as planned you can check the log files.
-* On the Windows client it is stored at "C:\Windows\Temp\eduVpnDeployment.log". 
-* On the macOS client it is stored at "\Library\Logs\Microsoft\eduVpnDeployment.log" 
+* On the Windows client it is stored at "C:\Windows\Temp\Install-VPN-Tunnel.log"
+* On the macOS client it is stored at "/Library/Logs/Microsoft/install_vpn_tunnel.log"
 * Revocation logs can be found at "/var/lib/vpn-provisioning/revocation.log"
 
 # Future Work

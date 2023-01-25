@@ -45,7 +45,7 @@ if (!isset($platform) || !isset($profile_id) || $profile_id == '') {
         switch ($platform) {
         case 'windows':
             header('Content-Type: text/plain');
-            header('Content-Disposition: inline; filename="Windows_Intune_management_script.ps1"');
+            header('Content-Disposition: attachment; filename="Install-VPN-Tunnel.ps1"');
 ?>try {
     # Get managed device id
     $DeviceID = Get-ItemPropertyValue HKLM:\SOFTWARE\Microsoft\Provisioning\Diagnostics\Autopilot\EstablishedCorrelations -Name EntDMID
@@ -137,18 +137,18 @@ if (!isset($platform) || !isset($profile_id) || $profile_id == '') {
     }
 }
 catch {
-    $_ | Out-File -FilePath "$($env:TEMP)\eduVpnDeployment.log"
+    $_ | Out-File -FilePath "$($env:TEMP)\Install-VPN-Tunnel.log"
 }
 <?php
             break;
 
         case 'macos':
             header('Content-Type: text/plain');
-    header('Content-Disposition: inline; filename="macOS_Intune_management_script.sh"');
+    header('Content-Disposition: attachment; filename="install_vpn_tunnel.sh"');
     $xml_header = '<'.'?xml version="1.0" encoding="UTF-8"?'.'>';
 ?>#!/bin/bash
 
-LOGFILE=/Library/Logs/Microsoft/eduVpnDeployment.log
+LOGFILE=/Library/Logs/Microsoft/install_vpn_tunnel.log
 
 # We start a subprocess so that we can properly log the output
 (
@@ -277,7 +277,7 @@ if [ "$http_status" = "200" ]; then
 		launchctl load /Library/LaunchDaemons/openvpn.plist
 	fi
 else
-	echo "we did not receive a HTTP 200 ok from the server" >> /Library/Logs/Microsoft/eduVpnDeployment.log
+	echo "we did not receive a HTTP 200 ok from the server"
 fi
 ) >& $LOGFILE
 <?php
