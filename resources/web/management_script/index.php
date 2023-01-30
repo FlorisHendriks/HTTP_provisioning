@@ -71,10 +71,28 @@ if (!isset($platform) || !isset($profile_id) || $profile_id == '') {
         throw "$($_.Exception) `r`n$responseBody"
     }
     if ($Response.StatusCode -eq 200) {
+        # winget requires Visual C++ Redistributables
+        $vcRuntime140 = Get-Item -Path "$($env:windir)\System32\vcruntime140.dll" -ErrorAction Ignore
+        if ($vcRuntime140 -eq $null) {
+            $vcRedistUrl = switch ($env:PROCESSOR_ARCHITECTURE) {
+                'AMD64' {'https://aka.ms/vs/17/release/vc_redist.x64.exe'}
+                'ARM64' {'https://aka.ms/vs/17/release/vc_redist.arm64.exe'}
+                'x86' {'https://aka.ms/vs/17/release/vc_redist.x86.exe'}
+                default {throw "Unknown platform: $($env:PROCESSOR_ARCHITECTURE)"}
+            }
+            $vcRedist = "$($env:TEMP)\vc_redist.exe"
+            try {
+                Invoke-WebRequest -Uri $vcRedistUrl -OutFile $vcRedist
+                & $vcRedist /install /quiet
+            }
+            finally {
+                Remove-Item -Path $vcRedist -ErrorAction Ignore
+            }
+        }
+
         # Using winget as system user is quite a hassle (https://github.com/microsoft/winget-cli/issues/548).
         # It can not find the winget path by itself so we need to resolve the path
         # (https://call4cloud.nl/2021/05/cloudy-with-a-chance-of-winget/#part3):
-
         $ResolveWingetPath = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_*__8wekyb3d8bbwe"
         if ($ResolveWingetPath) {
             $WingetPath = $ResolveWingetPath[-1].Path
@@ -87,10 +105,9 @@ if (!isset($platform) || !isset($profile_id) || $profile_id == '') {
         switch ($Response.Headers['Content-Type']) {
             'application/x-wireguard-profile' {
                 # Install and deploy WireGuard tunnel
+                .\winget.exe install WireGuard.WireGuard --silent --accept-package-agreements --accept-source-agreements
                 $service = Get-Service -Name 'WireGuardTunnel$eduVPN' -ErrorAction Ignore
-                if ($service -eq $null) {
-                    .\winget.exe install WireGuard.WireGuard --silent --accept-package-agreements --accept-source-agreements | Out-Null
-                } else {
+                if ($service -ne $null) {
                     $service | Stop-Service
                 }
 
@@ -112,11 +129,8 @@ if (!isset($platform) || !isset($profile_id) || $profile_id == '') {
             }
             'application/x-openvpn-profile' {
                 # Install and deploy OpenVPN tunnel
-                $service = Get-Service -Name 'OpenVPNService' -ErrorAction Ignore
-                if ($service -eq $null) {
-                    .\winget.exe install OpenVPNTechnologies.OpenVPN --silent --accept-package-agreements --accept-source-agreements --override "ADDLOCAL=OpenVPN.Service,OpenVPN,Drivers.TAPWindows6,Drivers" | Out-Null
-                    $service = Get-Service -Name 'OpenVPNService'
-                }
+                .\winget.exe install OpenVPNTechnologies.OpenVPN --silent --accept-package-agreements --accept-source-agreements --override "ADDLOCAL=OpenVPN.Service,OpenVPN,Drivers.TAPWindows6,Drivers"
+                $service = Get-Service -Name 'OpenVPNService'
                 $service | Stop-Service
 
                 # Limit access to the System user and administrators.
