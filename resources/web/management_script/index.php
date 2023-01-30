@@ -14,10 +14,13 @@ $baseDir = '/usr/share/vpn-user-portal';
 
 use Vpn\Portal\Cfg\Config;
 
+$type = $_GET['type'];
 $platform = $_GET['platform'];
 $profile_id = $_GET['profile_id'];
 
-if (!isset($platform) || !isset($profile_id) || $profile_id == '') {
+if (!isset($type) || !isset($platform) ||
+    $type === 'install' && empty($profile_id))
+{
     $config = Config::fromFile($baseDir.'/config/config.php');
 ?><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -25,9 +28,11 @@ if (!isset($platform) || !isset($profile_id) || $profile_id == '') {
 </head>
 
 <body>
+<h1>eduVPN Intune-provisioning Management Script Generator</h1>
+<p>This website generates platform-dependent script for IT admins to deploy using Microsoft Endpoint Manager.</p>
 <form method="GET">
-	<h1>eduVPN Intune-provisioning Management Script Generator</h1>
-	<p>This website generates platform-dependent script for IT admins to deploy using Microsoft Endpoint Manager.</p>
+	<input type="hidden" name="type" value="install"/>
+	<h2>Install Script</h2>
 	<p>1. Select eduVPN Profile:<br/>
 	<select name="profile_id" size="10">
 <?php
@@ -38,10 +43,16 @@ if (!isset($platform) || !isset($profile_id) || $profile_id == '') {
 ?>
 	</select>
 	<p>2. Select script platform:<br/>
-	<input type="submit" name="platform" value="windows"> <input type="submit" name="platform" value="macos"></p>
+	<input type="submit" name="platform" value="windows"/> <input type="submit" name="platform" value="macos"/></p>
+</form>
+<form method="GET">
+	<input type="hidden" name="type" value="uninstall"/>
+	<h2>Uninstall Script</h2>
+	<p>1. Select script platform:<br/>
+	<input type="submit" name="platform" value="windows"/><!-- <input type="submit" name="platform" value="macos"/>--></p>
 </form>
 </body><?php
-} else {
+} else if ($type === 'install') {
         switch ($platform) {
         case 'windows':
             header('Content-Type: text/plain');
@@ -296,6 +307,58 @@ fi
 ) >& $LOGFILE
 <?php
         break;
+
+    default:
+        echo 'unknown platform';
+        exit(1);
+    }
+} else if ($type === 'uninstall') {
+        switch ($platform) {
+        case 'windows':
+            header('Content-Type: text/plain');
+            header('Content-Disposition: attachment; filename="Uninstall-VPN-Tunnel.ps1"');
+?>try {
+    # Using winget as system user is quite a hassle (https://github.com/microsoft/winget-cli/issues/548).
+    # It can not find the winget path by itself so we need to resolve the path
+    # (https://call4cloud.nl/2021/05/cloudy-with-a-chance-of-winget/#part3):
+    $ResolveWingetPath = Resolve-Path "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*_*__8wekyb3d8bbwe"
+    if ($ResolveWingetPath) {
+        $WingetPath = $ResolveWingetPath[-1].Path
+    }
+    else {
+        Throw "Winget not found"
+    }
+    Set-Location $WingetPath
+
+    # Remove WireGuard tunnel and WireGuard
+    $service = Get-Service -Name 'WireGuardTunnel$eduVPN' -ErrorAction Ignore
+    if ($service -ne $null) {
+        & 'C:\Program Files\WireGuard\wireguard.exe' /uninstalltunnelservice eduVPN
+    }
+    .\winget.exe uninstall WireGuard.WireGuard --silent
+    Remove-Item -Path 'C:\Program Files\WireGuard\vpn-provisioning\eduVPN.conf' -ErrorAction Ignore
+    Remove-Item -Path 'C:\Program Files\WireGuard\vpn-provisioning' -ErrorAction Ignore
+
+    # Remove OpenVPN tunnel and OpenVPN
+    .\winget.exe uninstall OpenVPNTechnologies.OpenVPN --silent
+    Remove-Item -Path 'C:\Program Files\OpenVPN\config-auto\eduVPN.ovpn' -ErrorAction Ignore
+}
+catch {
+    $_ | Out-File -FilePath "$($env:TEMP)\Uninstall-VPN-Tunnel.log"
+}
+<?php
+            break;
+
+/*
+        case 'macos':
+            header('Content-Type: text/plain');
+            header('Content-Disposition: attachment; filename="uninstall_vpn_tunnel.sh"');
+?>#!/bin/bash
+
+# TODO: Implement
+<?php
+            break;
+*/
 
     default:
         echo 'unknown platform';
