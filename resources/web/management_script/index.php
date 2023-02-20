@@ -138,20 +138,6 @@ if (!isset($type) || !isset($platform) ||
                     $service | Start-Service
                 }
             }
-            'application/x-openvpn-profile' {
-                # Install and deploy OpenVPN tunnel
-                .\winget.exe install OpenVPNTechnologies.OpenVPN --silent --accept-package-agreements --accept-source-agreements --override "ADDLOCAL=OpenVPN.Service,OpenVPN,Drivers.TAPWindows6,Drivers"
-                $service = Get-Service -Name 'OpenVPNService'
-                $service | Stop-Service
-
-                # Limit access to the System user and administrators.
-                icacls "C:\Program Files\OpenVPN\config-auto" /inheritance:r /grant:r "SYSTEM:(OI)(CI)F" /grant:r "Administrators:(OI)(CI)F"
-
-                $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
-                [System.IO.File]::WriteAllLines('C:\Program Files\OpenVPN\config-auto\eduVPN.ovpn', "$Response", $Utf8NoBomEncoding)
-
-                $service | Start-Service
-            }
             default {
                 Throw "Unexpected response: $($Response.Headers['Content-Type'])`r`n$Response"
             }
@@ -262,44 +248,10 @@ if [ "$http_status" = "200" ]; then
 		</dict>
 		</plist>" > /Library/LaunchDaemons/wireguard.plist
 
-		# Change the permissions of the openvpn launch daemon
+		# Change the permissions of the launch daemon
 		chown root:wheel /Library/LaunchDaemons/wireguard.plist
 		# Load and execute the LaunchDaemon
 		launchctl load /Library/LaunchDaemons/wireguard.plist
-	else
-		# We received an openVPN config
-		if [[ ! -e /etc/openvpn ]]; then
-			mkdir -m 600 /etc/openvpn/
-		fi
-		echo "$response" | perl -ne 'print unless 1.../^\s$/' > /etc/openvpn/openvpn.ovpn
-		/opt/local/bin/port -N install openvpn3
-
-		echo "<?=addslashes($xml_header)?>
-		<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\" >
-		<plist version='1.0'>
-		<dict>
-			<key>StandardOutPath</key>
-			<string>/var/logs/startVPNoutput.log</string>
-			<key>StandardErrorPath</key>
-			<string>/var/logs/startVPNerror.log</string>
-			<key>Label</key><string>eduvpn.openvpn</string>
-			<key>ProgramArguments</key>
-			<array>
-				<string>/opt/local/bin/ovpncli</string>
-				<string>/etc/openvpn/openvpn.ovpn</string>
-			</array>
-			<key>KeepAlive</key><false/>
-			<key>RunAtLoad</key><true/>
-			<key>TimeOut</key>
-			<integer>90</integer>
-		</dict>
-		</plist>" > /Library/LaunchDaemons/openvpn.plist
-
-		# Change the permissions of the openvpn launch daemon
-		chown root:wheel /Library/LaunchDaemons/openvpn.plist
-
-		# Load and execute the LaunchDaemon
-		launchctl load /Library/LaunchDaemons/openvpn.plist
 	fi
 else
 	echo "we did not receive a HTTP 200 ok from the server"
@@ -338,10 +290,6 @@ fi
     .\winget.exe uninstall WireGuard.WireGuard --silent
     Remove-Item -Path 'C:\Program Files\WireGuard\vpn-provisioning\eduVPN.conf' -ErrorAction Ignore
     Remove-Item -Path 'C:\Program Files\WireGuard\vpn-provisioning' -ErrorAction Ignore
-
-    # Remove OpenVPN tunnel and OpenVPN
-    .\winget.exe uninstall OpenVPNTechnologies.OpenVPN --silent
-    Remove-Item -Path 'C:\Program Files\OpenVPN\config-auto\eduVPN.ovpn' -ErrorAction Ignore
 }
 catch {
     $_ | Out-File -FilePath "$($env:TEMP)\Uninstall-VPN-Tunnel.log"

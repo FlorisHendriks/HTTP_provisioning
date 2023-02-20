@@ -1,7 +1,7 @@
 # HTTP provisioning
 [eduVPN](https://github.com/eduVPN) is used to provide (large groups of) users a secure way to access the internet and their organisational resources. The goal of eduVPN is to replace typical closed-source VPNs with an open-source audited alternative that works seamlessly with an enterprise identity solution.
 
-Currently, eduVPN authorization works as follows: first, a user installs the eduVPN client on a supported device. When starting the client, the user searches for his or her organisation which opens a web page to the organisation's Identity Provider. The Identity Provider verifies the credentials of the user and notifies the OAuth server whether they are valid or not. The OAuth server then sends back an OAuth token to the user. With that OAuth token, the client application requests an OpenVPN or WireGuard configuration file. When the client receives a configuration file, it authenticates to either the OpenVPN or WireGuard server and establishes the connection (see the Figure below for the protocol overview).
+Currently, eduVPN authorization works as follows: first, a user installs the eduVPN client on a supported device. When starting the client, the user searches for his or her organisation which opens a web page to the organisation's Identity Provider. The Identity Provider verifies the credentials of the user and notifies the OAuth server whether they are valid or not. The OAuth server then sends back an OAuth token to the user. With that OAuth token, the client application requests a WireGuard configuration file. When the client receives a configuration file, it authenticates to the WireGuard server and establishes the connection (see the Figure below for the protocol overview).
 
 ![image](https://user-images.githubusercontent.com/47246332/173606649-0ced87bb-f3a0-46b5-93f4-107ccd404e68.png)
 
@@ -13,7 +13,7 @@ Moreover, this authorization protocol can be seen as an extra threshold for the 
 In this document we are going to solve these drawbacks of the current authorization flow by making eduVPN a system VPN that is always on via provisioning. So instead of making the user interact with a eduVPN client to establish a VPN connection we are going to realize that via a daemon. [Initially we solved this by implementing a technical path using Active Directory Certificate Services (ADCS)](https://github.com/FlorisHendriks98/eduVPN-provisioning). This gets the job done but has two significant limitations. Organisations need to implement ADCS and certificate revocation was a bit inelegant. We want to improve this solution by taking another technical path called HTTP provisioning. 
 
 ## High-level protocol of our solution
-Here we describe how we can use WireGuard and OpenVPN client applications to establish a VPN connection that starts on boot.
+Here we describe how we can use WireGuard client application to establish a VPN connection that starts on boot.
 ### Wireguard for Windows
 1. [Download](https://www.wireguard.com/install/) and install WireGuard on the device
 2. Get VPN configuration file to the device
@@ -27,31 +27,6 @@ e.g.
 ### Wireguard for macOS
 It isn't possible to start a WireGuard tunnel on boot with the WireGuard macOS app. It is however possible to do this with wg-quick which can be installed along with the wireguard-tools package. 
 1. Install wireguard-tools which can be installed using either [Homebrew](https://brew.sh/) or [Macports](https://www.macports.org/install.php).
-2. Get VPN configuration file to the device
-3. Put a plist file in /Library/LaunchDaemons/ (examples can be found in the Github repository)
-4. Run the command: sudo launchctl load \<name_of_plist_file\>.plist
-
-### OpenVPN for Windows
-1. [Download OpenVPN Community edition](https://openvpn.net/community-downloads/). When installing the msi, we need to make sure that we also install the OpenVPN tunnel manager service, this is by default not enabled. 
-  When using the installer GUI, click customize.
-  
-  ![image](https://user-images.githubusercontent.com/47246332/185739715-32c5d992-3a22-4d55-b220-fcab7f29c7ca.png)
-  
-  Enable the openvpn service feature:
-  
-  ![image](https://user-images.githubusercontent.com/47246332/185739857-77a1c2e3-475e-48cf-99fd-6c079c7cb637.png)
-
-  When using the command line (as admin), we can execute this command:
-  
-  msiexec /q /n /I \<path to msi installer\> ADDLOCAL=OpenVPN.Service,OpenVPN,Drivers.TAPWindows6,Drivers
-  
-2. Get VPN configuration file to the device
-3. Put the VPN configuration file in the directory C:\Program Files\OpenVPN\config-auto (or where you installed OpenVPN)
-4. Either reboot the device or restart the OpenVPNService (when OpenVPNService is started, a separate OpenVPN
-process will be instantiated for each configuration file that is found in \config-auto directory.)
-  
-### OpenVPN for macOS
-1. Install either the [TunnelBlick app](https://tunnelblick.net/downloads.html) or the OpenVPN Homebrew/Macports package.
 2. Get VPN configuration file to the device
 3. Put a plist file in /Library/LaunchDaemons/ (examples can be found in the Github repository)
 4. Run the command: sudo launchctl load \<name_of_plist_file\>.plist
@@ -89,7 +64,7 @@ High-level concept:
 
 Unfortunately, a significant limitation of Intune is that we can not easily deploy a configuration for a specific managed device. [The device needs to be in a group in order to be able to deploy the configuration](https://docs.microsoft.com/en-us/graph/api/intune-shared-devicemanagementscript-assign?view=graph-rest-beta). Since every deployment is unique, every managed device needs to be in an unique group. This results into an overload of groups which makes managebility for IT administrators more difficult.
 
-In order to mitigate this, we deploy only one powershell/batch script that is uniform for every managed device. Every enrolled device receives this script and executes it (you can also use a specific group). Based on the profile, it either receives an openVPN or WireGuard configuration file using an API call (it uses the preferred protocol configured in the vpn-user-portal config file of eduVPN). Next the script installs an openVPN or WireGuard tunnel service and establishes the VPN connection.
+In order to mitigate this, we deploy only one powershell/batch script that is uniform for every managed device. Every enrolled device receives this script and executes it (you can also use a specific group). It receives WireGuard configuration file using an API call (it uses the preferred protocol configured in the vpn-user-portal config file of eduVPN). Next the script installs a WireGuard tunnel service and establishes the VPN connection.
 
 Initially we authenticated the API call to retceive a configuration file with a static 256 bit token. However, we decided to drop this idea, it is very risky and unsafe to let the device do the token authenticate api call to the eduVPN server. Intune logs the script including the token which an attacker can then easily retrieve. We were therefore trying to find a safer authentication approach.
 
@@ -112,9 +87,9 @@ for Windows:
 
 ![sendApiCall(1)(2)(2)(2) drawio(1)](https://user-images.githubusercontent.com/47246332/183854237-60f4de43-12a5-4c97-bb3f-d6b5a1767ffd.png)
 
-A limitation of this path is that it supports only OpenVPN. OpenVPN, unlike WireGuard, has the feature to authenticate via certificates. We would like to also support WireGuard as that is a more [efficient protocol](https://dl.acm.org/doi/pdf/10.1145/3374664.3379532).
+A limitation of this path is that it supports only OpenVPN. OpenVPN, unlike WireGuard, has the feature to authenticate via certificates. We would like to support WireGuard as that is a more [efficient protocol](https://dl.acm.org/doi/pdf/10.1145/3374664.3379532).
 
-In order to do this we can set up an intermediate webserver between the managed device and eduVPN. When a device enrolls to Intune it will get the Intune certificate. Next we also deploy via Intune a script that is run on the managed device. The script does an API call to the intermediate webserver authenticated with the certificate. Then the webserver checks if the certificate belongs to the correct tenant, if the device belongs to that tenant (using the managed device id) and if the certificate is signed by the Microsoft CA. When the certificate is validated, it requests a VPN config (either OpenVPN or WireGuard at eduVPN. eduVPN sends back a VPN config to the intermediate server. The intermediate server then forwards the config to the managed device. The managed device installs the config and establishes the VPN connection with eduVPN. A high-level overview:
+In order to do this we can set up an intermediate webserver between the managed device and eduVPN. When a device enrolls to Intune it will get the Intune certificate. Next we also deploy via Intune a script that is run on the managed device. The script does an API call to the intermediate webserver authenticated with the certificate. Then the webserver checks if the certificate belongs to the correct tenant, if the device belongs to that tenant (using the managed device id) and if the certificate is signed by the Microsoft CA. When the certificate is validated, it requests a VPN config at eduVPN. eduVPN sends back a VPN config to the intermediate server. The intermediate server then forwards the config to the managed device. The managed device installs the config and establishes the VPN connection with eduVPN. A high-level overview:
 
 ![sendApiCall(1)(2)(2)(2) drawio(3)](https://user-images.githubusercontent.com/47246332/183869452-e755c057-6002-4cb0-adef-bc97358d11dd.png)
 
