@@ -160,42 +160,45 @@ catch {
 ?>#!/bin/bash
 
 LOGFILE=/Library/Logs/Microsoft/install_vpn_tunnel.log
+PREFIX=/opt/vpn-provisioning
 
 # We start a subprocess so that we can properly log the output
 (
 id=$(security find-certificate -a | awk -F= '/issu/ && /MICROSOFT INTUNE MDM AGENT CA/ { getline; print $2 }')
 id=$(echo $id | tr -d '"')
-
 id=$(echo $id | cut -d ' ' -f1)
-
 deviceId=$(echo $id | cut -f2- -d "-")
-
-echo "$id" > /Library/Logs/Microsoft/id.log
+echo "Certificate ID: $id"
+echo "Device ID: $deviceId"
 
 # Retrieve config from eduVPN
 response=$( CURL_SSL_BACKEND=secure-transport curl -s -i --cert "$id" -d "profile_id=<?=$profile_id?>&user_id=$deviceId" "https://vpn.example/profile/")
-
-echo "$response" > /Library/Logs/Microsoft/response.log
-
 http_status=$(echo "$response" | awk 'NR==1 {print $2}' | tr -d '\n')
 
 if [ "$http_status" = "200" ]; then
+	# Install Command Line Tools for Xcode if not present
+	xcode-select -p >& /dev/null
+	if [ $? -ne 0 ]; then
+		echo "Command Line Tools for Xcode not found. Installing from softwareupdate..."
+		touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+		PROD=$(softwareupdate -l | grep "\*.*Command Line" | tail -n 1 | sed 's/^[^C]* //')
+		softwareupdate -i "$PROD" --verbose
+	fi
 
-	#Lets create and traverse to a directory where we are allowed to write as root
-	mkdir -m 600 /etc/temp/
-	cd /etc/temp
+	# Lets create and traverse to a directory where we are allowed to write as root
+	mkdir -m 600 /var/tmp/vpn-provisioning
+	pushd /var/tmp/vpn-provisioning
 
-	#Get latest macports version
+	# Get latest macports version
 	version=$( curl -fs --url 'https://raw.githubusercontent.com/macports/macports-base/master/config/RELEASE_URL' )
 	version=${version##*/v}
-
-	echo "$version" > /Library/Logs/Microsoft/version.log
+	echo "MacPorts version: $version"
 
 	curl -L -O --url "https://github.com/macports/macports-base/releases/download/v${version}/MacPorts-${version}.tar.gz"
-	tar -zxf   MacPorts-${version}.tar.gz 2>/dev/null
+	tar -zxf MacPorts-${version}.tar.gz
 	cd MacPorts-${version}
 	CC=/usr/bin/cc ./configure \
-		--prefix=/opt/local \
+		--prefix=${PREFIX} \
 		--with-install-user=root \
 		--with-install-group=wheel \
 		--with-directory-mode=0755 \
@@ -203,36 +206,36 @@ if [ "$http_status" = "200" ]; then
 	&& make SELFUPDATING=1 \
 	&& make install SELFUPDATING=1
 
-	# update MacPorts itself
-	/opt/local/bin/port -dN selfupdate
+	# Update MacPorts itself
+	${PREFIX}/bin/port -dN selfupdate
 
-	# cleanup
-	cd ..
-	rm  -rf  ./MacPorts-${version}
+	# Cleanup
+	popd
+	rm -rf /var/tmp/vpn-provisioning
 
 	if [[ "$response" == *"Interface"* ]]; then
-		if [[ ! -e /etc/wireguard ]]; then
-			mkdir -m 600 /etc/wireguard/
+		if [[ ! -e ${PREFIX}/etc/wireguard ]]; then
+			mkdir -m 600 ${PREFIX}/etc/wireguard
 		fi
-		echo "$response" | perl -ne 'print unless 1.../^\s$/' > /etc/wireguard/wg0.conf
-		output=$(/opt/local/bin/port -N install wireguard-tools 2>&1)
+		echo "$response" | perl -ne 'print unless 1.../^\s$/' > ${PREFIX}/etc/wireguard/wg0.conf
+		${PREFIX}/bin/port -N install wireguard-tools
 
-		# Create a wireguard daemon
+		# Create a launchd daemon
 		echo "<?=addslashes($xml_header)?>
 		<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
 		<plist version=\"1.0\">
 		<dict>
 			<key>StandardOutPath</key>
-			<string>/var/logs/WireguardDaemonOutput.log</string>
+			<string>${PREFIX}/var/log/vpn-provisioning-out.log</string>
 			<key>StandardErrorPath</key>
-			<string>/var/logs/WireguardDaemonError.log</string>
+			<string>${PREFIX}/var/log/vpn-provisioning-err.log</string>
 			<key>Label</key>
-			<string>com.wireguard.wg0</string>
+			<string>org.eduvpn.provisioning</string>
 			<key>ProgramArguments</key>
 			<array>
-				<string>/opt/local/bin/wg-quick</string>
+				<string>${PREFIX}/var/log/bin/wg-quick</string>
 				<string>up</string>
-				<string>/etc/wireguard/wg0.conf</string>
+				<string>${PREFIX}/etc/wireguard/wg0.conf</string>
 			</array>
 			<key>KeepAlive</key>
 			<false/>
@@ -243,18 +246,19 @@ if [ "$http_status" = "200" ]; then
 			<key>EnvironmentVariables</key>
 			<dict>
 				<key>PATH</key>
-				<string>/opt/local/bin</string>
+				<string>${PREFIX}/bin</string>
 			</dict>
 		</dict>
-		</plist>" > /Library/LaunchDaemons/wireguard.plist
-
-		# Change the permissions of the launch daemon
-		chown root:wheel /Library/LaunchDaemons/wireguard.plist
-		# Load and execute the LaunchDaemon
-		launchctl load /Library/LaunchDaemons/wireguard.plist
+		</plist>" > /Library/LaunchDaemons/vpn-provisioning.plist
+		chown root:wheel /Library/LaunchDaemons/vpn-provisioning.plist
+		launchctl load /Library/LaunchDaemons/vpn-provisioning.plist
+        else
+                echo "We did not receive a WireGuard configuration from the server"
+                echo "$response"
 	fi
 else
-	echo "we did not receive a HTTP 200 ok from the server"
+	echo "We did not receive a HTTP 200 ok from the server"
+	echo "$response"
 fi
 ) >& $LOGFILE
 <?php
