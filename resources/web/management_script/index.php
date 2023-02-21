@@ -49,7 +49,7 @@ if (!isset($type) || !isset($platform) ||
 	<input type="hidden" name="type" value="uninstall"/>
 	<h2>Uninstall Script</h2>
 	<p>1. Select script platform:<br/>
-	<input type="submit" name="platform" value="windows"/><!-- <input type="submit" name="platform" value="macos"/>--></p>
+	<input type="submit" name="platform" value="windows"/> <input type="submit" name="platform" value="macos"/></p>
 </form>
 </body><?php
 } else if ($type === 'install') {
@@ -301,16 +301,23 @@ catch {
 <?php
             break;
 
-/*
         case 'macos':
             header('Content-Type: text/plain');
             header('Content-Disposition: attachment; filename="uninstall_vpn_tunnel.sh"');
 ?>#!/bin/bash
 
-# TODO: Implement
+LOGFILE=/Library/Logs/Microsoft/uninstall_vpn_tunnel.log
+PREFIX=/opt/vpn-provisioning
+
+# We start a subprocess so that we can properly log the output
+(
+	rm -rf /var/tmp/vpn-provisioning
+	launchctl unload /Library/LaunchDaemons/vpn-provisioning.plist
+	rm -rf /Library/LaunchDaemons/vpn-provisioning.plist
+	rm -rf ${PREFIX}
+) >& $LOGFILE
 <?php
             break;
-*/
 
     default:
         echo 'unknown platform';
