@@ -149,6 +149,7 @@ if (!isset($type) || !isset($platform) ||
 }
 catch {
     $_ | Out-File -FilePath "$($env:TEMP)\Install-VPN-Tunnel.log"
+    Throw
 }
 <?php
             break;
@@ -297,6 +298,7 @@ fi
 }
 catch {
     $_ | Out-File -FilePath "$($env:TEMP)\Uninstall-VPN-Tunnel.log"
+    Throw
 }
 <?php
             break;
