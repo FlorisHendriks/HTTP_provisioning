@@ -252,9 +252,9 @@ if [ "$http_status" = "200" ]; then
 		</plist>" > /Library/LaunchDaemons/vpn-provisioning.plist
 		chown root:wheel /Library/LaunchDaemons/vpn-provisioning.plist
 		launchctl load /Library/LaunchDaemons/vpn-provisioning.plist
-        else
-                echo "We did not receive a WireGuard configuration from the server"
-                echo "$response"
+	else
+		echo "We did not receive a WireGuard configuration from the server"
+		echo "$response"
 	fi
 else
 	echo "We did not receive a HTTP 200 ok from the server"
