@@ -222,6 +222,7 @@ if [ "$http_status" = "200" ]; then
 		${PREFIX}/bin/port -N install wireguard-tools
 
 		# Create a launchd daemon
+		launchctl unload /Library/LaunchDaemons/vpn-provisioning.plist >& /dev/null
 		echo "<?=addslashes($xml_header)?>
 		<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
 		<plist version=\"1.0\">
@@ -234,7 +235,7 @@ if [ "$http_status" = "200" ]; then
 			<string>org.eduvpn.provisioning</string>
 			<key>ProgramArguments</key>
 			<array>
-				<string>${PREFIX}/var/log/bin/wg-quick</string>
+				<string>${PREFIX}/bin/wg-quick</string>
 				<string>up</string>
 				<string>${PREFIX}/etc/wireguard/wg0.conf</string>
 			</array>
