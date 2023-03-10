@@ -89,11 +89,9 @@ $token = $jsonObject["access_token"];
 $url='https://graph.microsoft.com/v1.0/deviceManagement/managedDevices?$select=id';
 
 $ch = curl_init();
-
 curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-
 
 $headers = array();
 $headers[] = "Authorization: Bearer " . $token;
@@ -143,11 +141,10 @@ if($boolean){
 //eduVPN replies with a config which we will forward to the managed device.
 
 $ch = curl_init();
-
 curl_setopt($ch, CURLOPT_URL, '{vpnUrl}/vpn-user-portal/admin/api/v1/create');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, "user_id=" . $_POST["user_id"] . "&profile_id=" . $_POST["profile_id"]);
+curl_setopt($ch, CURLOPT_POSTFIELDS, "user_id=" . urlencode($_REQUEST["user_id"]) . "&profile_id=" . urlencode($_REQUEST["profile_id"]));
 $headers = array();
 $headers[] = 'Authorization: Bearer {adminApiToken}';
 $headers[] = 'Content-Type: application/x-www-form-urlencoded';
