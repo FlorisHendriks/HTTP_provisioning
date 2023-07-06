@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 # Deploy an intermediate webserver and set up automatic VPN revocation
