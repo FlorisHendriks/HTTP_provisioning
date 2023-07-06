@@ -10,7 +10,7 @@ A limitation of this authorization protocol is that the VPN connection can only 
 Moreover, this authorization protocol can be seen as an extra threshold for the user to use the VPN. The user needs to start up the client, connect and log in (if the configuration is expired).
 
 # Finding a solution
-In this document we are going to solve these drawbacks of the current authorization flow by making eduVPN a system VPN that is always on via provisioning. So instead of making the user interact with a eduVPN client to establish a VPN connection we are going to realize that via a daemon. [Initially we solved this by implementing a technical path using Active Directory Certificate Services (ADCS)](https://github.com/FlorisHendriks98/eduVPN-provisioning). This gets the job done but has two significant limitations. Organisations need to implement ADCS and certificate revocation was a bit inelegant. We want to improve this solution by taking another technical path called HTTP provisioning. 
+In this document we are going to solve these drawbacks of the current authorization flow by making eduVPN a system VPN that is always on via provisioning. So instead of making the user interact with a eduVPN client to establish a VPN connection we are going to realize that via a daemon. [Initially we solved this by implementing a technical path using Active Directory Certificate Services (ADCS)](https://github.com/FlorisHendriks/eduVPN-provisioning). This gets the job done but has two significant limitations. Organisations need to implement ADCS and certificate revocation was a bit inelegant. We want to improve this solution by taking another technical path called HTTP provisioning. 
 
 ## High-level protocol of our solution
 Here we describe how we can use WireGuard client application to establish a VPN connection that starts on boot.
@@ -130,7 +130,7 @@ We first need to register an application in Azure. This will allow us to do API 
 ## Step 2
 Perform these steps on the server which will host intermediate server:
 
-    $ git clone https://github.com/FlorisHendriks98/HTTP_provisioning.git
+    $ git clone https://github.com/FlorisHendriks/HTTP_provisioning.git
     $ cd HTTP_provisioning/resources/
     $ sudo ./deploy_intermediate_debian.sh
 
