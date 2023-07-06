@@ -24,30 +24,30 @@ $reversedString = "";
 // Reverse the first three parts of the oid (this is necessary
 // please refer to the blog post above)
 while($x < 3){
-        $originalString = substr($hex, $offset, $length);
-        $arrayWith2CharsPerElement = str_split($originalString, 2);
-        $arrayWithReversedKeys = array_reverse($arrayWith2CharsPerElement);
-        $newStringInReverseOrder = implode($arrayWithReversedKeys);
+	$originalString = substr($hex, $offset, $length);
+	$arrayWith2CharsPerElement = str_split($originalString, 2);
+	$arrayWithReversedKeys = array_reverse($arrayWith2CharsPerElement);
+	$newStringInReverseOrder = implode($arrayWithReversedKeys);
 
-        $reversedString .= $newStringInReverseOrder;
+	$reversedString .= $newStringInReverseOrder;
 
-        if($length == 8){
-                $length = $length - 4;
-        }
-        if($offset == 0){
-                $offset += 8;
-        }
-        else{
-                $offset += 4;
-        }
-        $x++;
+	if($length == 8){
+		$length = $length - 4;
+	}
+	if($offset == 0){
+		$offset += 8;
+	}
+	else{
+		$offset += 4;
+	}
+	$x++;
 }
 $ClientCertificateTenantId = $reversedString .= substr($hex, 16);
 
 if ($ClientCertificateTenantId != $tenantid){
 	http_response_code(403);
-        echo 'error, the certificate tenant id is not equal to the tenant id of Intune';
-        exit(1);
+	echo 'error, the certificate tenant id is not equal to the tenant id of Intune';
+	exit(1);
 }
 
 // We now know that the device certificate is part of Intune's correct tenant.
@@ -89,11 +89,9 @@ $token = $jsonObject["access_token"];
 $url='https://graph.microsoft.com/v1.0/deviceManagement/managedDevices?$select=id';
 
 $ch = curl_init();
-
 curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-
 
 $headers = array();
 $headers[] = "Authorization: Bearer " . $token;
@@ -124,18 +122,18 @@ $managedId = $_SERVER["REMOTE_USER"];
 
 $num = substr_count($managedId, '-');
 if($num == 5){
-        $managedId = substr(strstr($managedId, '-'), 1);
+	$managedId = substr(strstr($managedId, '-'), 1);
 }
 
 foreach ($flat as $value){
-        if($value == $managedId){
-                $boolean = False;
-        }
+	if($value == $managedId){
+		$boolean = False;
+	}
 }
 if($boolean){
 	http_response_code(403);
-        echo 'error, the managed device id was not found in the Intune tenant';
-        exit(1);
+	echo 'error, the managed device id was not found in the Intune tenant';
+	exit(1);
 }
 
 
@@ -143,28 +141,40 @@ if($boolean){
 //eduVPN replies with a config which we will forward to the managed device.
 
 $ch = curl_init();
-
-curl_setopt($ch, CURLOPT_URL, 'https://{vpnDNS}/vpn-user-portal/admin/api/v1/create');
+curl_setopt($ch, CURLOPT_URL, '{vpnUrl}/vpn-user-portal/admin/api/v1/create');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, "user_id=" . $_POST["user_id"] . "&profile_id=" . $_POST["profile_id"]);
+curl_setopt($ch, CURLOPT_POSTFIELDS, "user_id=" . urlencode($_REQUEST["user_id"]) . "&profile_id=" . urlencode($_REQUEST["profile_id"]));
 $headers = array();
 $headers[] = 'Authorization: Bearer {adminApiToken}';
 $headers[] = 'Content-Type: application/x-www-form-urlencoded';
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+curl_setopt($ch, CURLOPT_HEADERFUNCTION,
+	function($curl, $header)
+	{
+		$h = explode(':', $header, 2);
+		if (count($h) >= 2) {
+			switch (strtolower(trim($h[0]))) {
+			case 'content-type':
+			case 'expires':
+				header($header);
+			}
+		}
+		return strlen($header);
+	}
+);
 
 $config = curl_exec($ch);
 
-$file = "/etc/eduVpnProvisioning/localDeviceIds.txt";
+$file = "/var/lib/vpn-provisioning/localDeviceIds.txt";
 if (strpos(file_get_contents($file), $managedId) === false) {
-        file_put_contents($file, $managedId . "\n", FILE_APPEND);
+	file_put_contents($file, $managedId . "\n", FILE_APPEND);
 }
-
 
 if (curl_errno($ch)) {
 	http_response_code(502);
-        echo 'Error:' . curl_error($ch);
-        exit(1);
+	echo 'Error:' . curl_error($ch);
+	exit(1);
 }
 curl_close($ch);
 echo $config;
