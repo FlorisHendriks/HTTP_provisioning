@@ -94,7 +94,8 @@ if (!isset($type) || !isset($platform) ||
             $vcRedist = "$($env:TEMP)\vc_redist.exe"
             try {
                 Invoke-WebRequest -Uri $vcRedistUrl -OutFile $vcRedist
-                & $vcRedist /install /quiet
+                $vcRedistArgs = "/install /quiet"
+    		Start-Process -FilePath $vcRedist -ArgumentList $vcRedistArgs -Wait
             }
             finally {
                 Remove-Item -Path $vcRedist -ErrorAction Ignore
