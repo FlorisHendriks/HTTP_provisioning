@@ -132,7 +132,7 @@ Perform these steps on the server which will host intermediate server:
 
     $ git clone https://github.com/FlorisHendriks/HTTP_provisioning.git
     $ cd HTTP_provisioning/resources/
-    $ sudo ./deploy_intermediate_debian.sh
+    $ sudo ./deploy_intermediate_<debian/fedora>.sh
 
 The script will ask to enter some values in order to set everything up properly.
 
