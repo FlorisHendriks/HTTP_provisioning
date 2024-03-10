@@ -117,29 +117,31 @@ This limitation is currently under ![discussion](https://github.com/curl/curl/di
 # Implementation
 ## Prerequisites
 * An Intune enrolled Windows 10/11 device or MacOS Monterey device
-* An EduVPN server with:
-  - admin API enabled
-  - SSL enabled
-  - A profile configured for ``System VPN'' with preferred protocol set to ```Wireguard```
+* A deployed EduVPN server with:
+  - ![admin API enabled](https://docs.eduvpn.org/server/v3/admin-api.html#admin-api)
+  - ![SSL enabled](https://docs.eduvpn.org/server/v3/deploy-debian.html#lets-encrypt)
+  - ![A profile configured for ``System VPN'' with preferred protocol set to ```Wireguard```](https://docs.eduvpn.org/server/v3/deploy-debian.html#lets-encrypt)
 * [Git installed](https://git-scm.com/download/win)
 * Access to a Microsoft Endpoint Manager (Intune) tenant.
 * Working DNS entry for your intermediate webserver, e.g. intermediate.example.org.
 
 ## Step 1
-We first need to register an application in Azure. This will allow us to do API calls to Intune.
+We first need to register an application in Azure. This will allow us to do API calls to Intune. Please refer to the tutorial below for additional guidance on how to register the application.
 
 * [Register an app in Azure](https://docs.microsoft.com/en-us/power-apps/developer/data-platform/walkthrough-register-app-azure-active-directory)
-* Go to API permissions and add the _Application permissions_ "DeviceManagementManagedDevices.Read.All" and "DeviceManagementManagedDevices.ReadWrite.All" to the "Microsoft Graph" API. Grant admin consent.
-* Go to Certificates & secrets and create a new client secret, temporarily save this value somewhere.
-
+* Go to API permissions and add the _Application permissions_ "DeviceManagementManagedDevices.Read.All" and "DeviceManagementManagedDevices.ReadWrite.All" to the "Microsoft Graph" API.
+* Grant admin consent for the above privileges.
+* Go to Certificates & secrets and create a new client secret. Be sure to temporarily save the ```value``` of the secret.
+* Retrieve the Azure Tenant ID, and Application client ID in Azure.
+* ![Retrieve the admin API token of the system vpn eduvpn server](https://docs.eduvpn.org/server/v3/admin-api.html#configuration).
 ## Step 2
-Perform these steps on the server which will host intermediate server:
+Perform these steps on the eduVPN server:
 
     $ git clone https://github.com/FlorisHendriks/HTTP_provisioning.git
     $ cd HTTP_provisioning/resources/
     $ sudo ./deploy_intermediate_<debian/fedora>.sh
 
-The script will ask to enter some values in order to set everything up properly.
+The script will ask to enter the values of step 1 in order to set everything up properly.
 
 ## Step 3
 Open up a browser and visit https://intermediate.example.org/management_script/ (replace hostname with your intermediate server FQDN) to generate Install-VPN-Tunnel.ps1 and install_vpn_tunnel.sh management scripts.
