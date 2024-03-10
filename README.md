@@ -120,8 +120,7 @@ This limitation is currently under ![discussion](https://github.com/curl/curl/di
 * An EduVPN server with:
   - admin API enabled
   - SSL enabled
-  - A profile configured for ``System VPN''
-  - Preferred protocol set to Wireguard
+  - A profile configured for ``System VPN'' with preferred protocol set to ```Wireguard```
 * [Git installed](https://git-scm.com/download/win)
 * Access to a Microsoft Endpoint Manager (Intune) tenant.
 * Working DNS entry for your intermediate webserver, e.g. intermediate.example.org.
