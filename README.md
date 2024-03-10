@@ -117,11 +117,10 @@ This limitation is currently under ![discussion](https://github.com/curl/curl/di
 # Implementation
 ## Prerequisites
 * An Intune enrolled Windows 10/11 device or MacOS Monterey device
-* A deployed EduVPN server with:
+* A deployed eduVPN server with:
   - ![admin API enabled](https://docs.eduvpn.org/server/v3/admin-api.html#admin-api)
   - ![SSL enabled](https://docs.eduvpn.org/server/v3/deploy-debian.html#lets-encrypt)
   - ![A profile configured for ``System VPN'' with preferred protocol set to ```Wireguard```](https://docs.eduvpn.org/server/v3/deploy-debian.html#lets-encrypt)
-* [Git installed](https://git-scm.com/download/win)
 * Access to a Microsoft Endpoint Manager (Intune) tenant.
 * Working DNS entry for your intermediate webserver, e.g. intermediate.example.org.
 
